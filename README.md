@@ -21,19 +21,19 @@ The problem is solved when all packages are **located at their destination nodes
 
 _We would like you to write (or think about) a program which takes as input_:
 
-● [A list of node names, `[ Node1, Node2, .. ]`] 
-● [A list of edges, `(Name, Node1, Node2, JourneyTimeInMinutes)`] 
-● [A list of trains `(TrainName, CapacityInKg, StartingNode)`] 
-● [A list of packages, `(PackageName, WeightInKg, StartingNode, DestinationNode)`]
+- [A list of node names, `[ Node1, Node2, .. ]`] 
+- [A list of edges, `(Name, Node1, Node2, JourneyTimeInMinutes)`] 
+- [A list of trains `(TrainName, CapacityInKg, StartingNode)`] 
+- [A list of packages, `(PackageName, WeightInKg, StartingNode, DestinationNode)`]
 
 _And produces as output a list of moves. **Each move should contain**_:
 
-● [The time at which the move occurs, in seconds, `W`] 
-● [The name of a train which moves, `T`.]
-● [The node that the train starts at, `N1`] 
-● [The names of the packages the train picks up at the start node, `P1`] 
-● [The node that the train finishes at, `N2`] 
-● [The names of the packages the train drops off at the finishing node, `P2`]
+- [The time at which the move occurs, in seconds, `W`] 
+- [The name of a train which moves, `T`.]
+- [The node that the train starts at, `N1`] 
+- [The names of the packages the train picks up at the start node, `P1`] 
+- [The node that the train finishes at, `N2`] 
+- [The names of the packages the train drops off at the finishing node, `P2`]
 
 _For clarity_:
 
