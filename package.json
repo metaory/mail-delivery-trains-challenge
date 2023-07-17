@@ -1,0 +1,12 @@
+{
+  "name": "mail-delivery-trains-challenge",
+  "version": "1.0.0",
+  "description": "a program to control a network of autonomous mail delivery trains",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
