@@ -15,18 +15,16 @@ const {
   trains: [TRAIN], // NOTE: To simplify; lets imagine there is only one train!
 } = data;
 
-// NOTE: we'll also ignore weight constraint entirely as well!
+// NOTE: we'll also ignore weight constraint entirely
 
 /*
   {
-    "stations": ["A", "B", "C"],
-    "edges": ["E1, A, B, 30", "E2, B, C, 10"],
-    "deliveries": ["K1, 5, A, C"],
-    "trains": ["Q1, 6, B"]
+    "stations": ["A", "B", "C", "D"],
+    "edges": ["E1,A,B,30", "E2,B,C,10", "E3,C,D,40"],
+    "deliveries": ["K1,5,A,C"],
+    "trains": ["Q1,6,B"]
   }
 */
-
-// const wish = { A: ["B"], B: ["A", "C"], C: ["B"] };
 
 const { connections, distances } = edges.reduce(
   (acc, cur) => {
@@ -44,7 +42,10 @@ const { connections, distances } = edges.reduce(
 );
 
 console.log(connections);
+//{ A: [ 'B' ], B: [ 'A', 'C' ], C: [ 'B', 'D' ], D: [ 'C' ] }
+
 console.log(distances);
+// { 'A-B': 30, 'B-A': 30, 'B-C': 10, 'C-B': 10, 'C-D': 40, 'D-C': 40 }
 
 const [train, , initialLocation] = TRAIN.split(","); // NOTE: ignoring capacity
 // log("initialLocation:", initialLocation);
@@ -61,7 +62,7 @@ const getNext = (from, to) => {
   }
 
   if (alt && alt !== to) {
-    // TODO:
+    // TODO: traverse both till
     console.log("AT JUNCTION!");
   }
 
@@ -77,10 +78,10 @@ function moveTrain(from, to, pkg = null) {
   while (current !== to) {
     log("next:", next);
     moves.push(`W=${time}, T=${train}, N1=${current}, N2=${next}, P2=[${pkg}]`);
-    trainLocation = next;
     time += distances[`${current}-${next}`];
     current = next;
-    next = getNext(next, to);
+    trainLocation = current;
+    next = getNext(current, to);
     log("trainLocation:", trainLocation);
     // process.exit();
   }
