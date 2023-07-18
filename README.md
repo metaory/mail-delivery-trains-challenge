@@ -48,7 +48,7 @@ _For clarity_:
 - [Any number of trains may be at any node at any time (nodes have no capacity limit)]
 - [Each train may carry any number of packages, long as it does not exceed capacity]
 - [Trains may end the sequence of moves anywhere]
-- [A train must start its next move at the destination node for its previous move 
+- [A train must start its next move at the destination node for its previous move
   (or at its starting node if it has not yet moved) - trains cannot teleport]
 
 **At the end of your sequence of moves,
@@ -95,10 +95,10 @@ that must be delivered to station `C`
 ---
 
     {
-      "stations": ["A", "B", "C"],
-      "edges": ["E1, A, B, 30", "E2, B, C, 10"],
-      "deliveries": ["K1, 5, A, C"],
-      "trains": ["Q1, 6, B"]
+      "stations": ["A", "B", "C", "D"],
+      "edges": ["E1,A,B,30", "E2,B,C,10", "E3,C,D,40"],
+      "deliveries": ["K1,5,A,C"],
+      "trains": ["Q1,6,B"]
     }
 
     [
@@ -107,7 +107,6 @@ that must be delivered to station `C`
       "W=60, T=Q1, N1=B, P1=[],   N2=C, P2=[K1]"
     ]
 
-    {
-      "A": "B",
-      "B": "C"
-    }
+    { A: [ 'B' ], B: [ 'A', 'C' ], C: [ 'B', 'D' ], D: [ 'C' ] }
+
+    { 'A-B': 30, 'B-A': 30, 'B-C': 10, 'C-B': 10, 'C-D': 40, 'D-C': 40 }
