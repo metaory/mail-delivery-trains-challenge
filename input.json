@@ -1,7 +1,7 @@
 {
-  "stations": ["A", "B", "C"],
+  "stations": ["A", "B", "C", "D"],
 
-  "edges": ["E1,A,B,30", "E2,B,C,10"],
+  "edges": ["E1,A,B,30", "E2,B,C,10", "E3,C,D,40"],
 
   "deliveries": ["K1,5,A,C"],
 
