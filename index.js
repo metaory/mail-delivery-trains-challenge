@@ -3,7 +3,6 @@ import { readFileSync } from "node:fs";
 
 console.clear();
 
-// const log = (key, value) => console.log(key, C.red(value));
 function log(tpl, ...vars) {
   for (const [i, key] of tpl.entries()) {
     if (!key) continue;
@@ -12,19 +11,11 @@ function log(tpl, ...vars) {
   process.stdout.write("\n");
 }
 
-const data = JSON.parse(readFileSync("./input.json", { encoding: "utf8" }));
-console.log("data:", data);
+const input = JSON.parse(readFileSync("./input.json", { encoding: "utf8" }));
+console.log("input:", input);
 
-const {
-  // stations, // NOTE: we dont need this!
-  edges,
-  deliveries,
-  trains: [TRAIN], // NOTE: To simplify; lets imagine there is only one train!
-} = data;
-
-// NOTE: we'll also ignore weight constraint entirely
-
-/*
+// ************************************************************************** //
+/* INPUT:
   {
     "stations": ["A", "B", "C", "D"],
     "edges": ["E1,A,B,30", "E2,B,C,10", "E3,C,D,40"],
@@ -32,6 +23,15 @@ const {
     "trains": ["Q1,6,B"]
   }
 */
+
+const {
+  // stations, // NOTE: we dont need this!
+  edges,
+  deliveries,
+  trains: [TRAIN], // NOTE: To simplify; lets imagine there is only one train!
+} = input;
+
+// NOTE: we'll also ignore weight constraint entirely
 
 const { connections, distances } = edges.reduce(
   (acc, cur) => {
@@ -94,8 +94,11 @@ function moveTrain(from, to, pkg = null) {
     // process.exit();
   }
 }
+// XXX: DEBUG:
 // moveTrain("A", "B");
-moveTrain("A", "C");
+// moveTrain("A", "C");
+moveTrain("B", "A");
+// moveTrain("A", "D"); // TODO: <<<
 
 // for (const delivery of deliveries) {
 //   const [pkg, weight, src, dst] = delivery.split(",");
