@@ -57,15 +57,15 @@ all packages must have been dropped off at their destination node**
 **We define the solution time as the earliest time
 at which all packages have been dropped off at their destination node**
 
-Solution `S1` is better than solution `S2` if the solution time is lower in `S1` than in `S2`
+Solution `S1` is better than `S2` if the solution time is lower in `S1` than in `S2`
 
-_We would obviously like the best solution possible, but correctness is more important than optimality_
+_We like the best solution possible, but correctness is more important than optimality_
 
 ---
 
-`3` // number of stations 
-`A` // station name 
-`B` // station name 
+`3` // number of stations
+`A` // station name
+`B` // station name
 `C` // station name
 
 `2` // number of edges
