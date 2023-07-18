@@ -26,6 +26,7 @@ const {
 const { connections, distances } = edges.reduce(
   (acc, cur) => {
     const [, from, to, distance] = cur.split(",");
+    // XXX: we are overwriting key with same node with ones that have multiple edges!!
     acc.connections[from] = to;
     acc.connections[to] = from;
     acc.distances[`${from}-${to}`] = +distance;
@@ -38,31 +39,37 @@ const { connections, distances } = edges.reduce(
 console.log("connections:", connections);
 console.log("distances:", distances);
 
+const [train, capacity, initialLocation] = TRAIN.split(",");
+
 const moves = [];
 let time = 0;
+let trainLocation = initialLocation;
 
-function moveTrain(trainStr, from, to, pkg) {
-  const [train] = trainStr.split(",");
-
+function moveTrain(from, to, pkg = null) {
   let current = from;
-  let next = connections[from];
+  let next = connections[trainLocation];
+  console.log(
+    `move train(@${trainLocation}) from ${from} to ${to} with ${pkg}`
+  );
 
   while (current !== to) {
     moves.push(`W=${time}, T=${train}, N1=${current}, N2=${next}, P2=[${pkg}]`);
+    trainLocation = next;
     time += distances[`${current}-${next}`];
     current = next;
     next = connections[next];
+    console.log("trainLocation:", trainLocation);
+    process.exit();
   }
 }
 
 for (const delivery of deliveries) {
   const [pkg, weight, src, dst] = delivery.split(",");
   // move train to delivery pickup location
-  // TODO:
-  // moveTrain(TRAIN, trainCurrentLocation, src);
+  moveTrain(trainLocation, src);
 
-  // move train to src
-  moveTrain(TRAIN, src, dst, pkg);
+  // move train to destination
+  // moveTrain(trainLocation, dst, pkg);
 }
 
 console.log("moves:", moves);
