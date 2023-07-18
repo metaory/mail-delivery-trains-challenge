@@ -82,7 +82,7 @@ function moveTrain(from, to, pkg = null) {
     current = next;
     next = getNext(next, to);
     log("trainLocation:", trainLocation);
-    process.exit();
+    // process.exit();
   }
 }
 // moveTrain("A", "B");
