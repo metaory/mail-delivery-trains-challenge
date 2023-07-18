@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 
 console.clear();
 
-const log = (key, ...value) => console.log(key, C.red(JSON.stringify(value)));
+const log = (key, value) => console.log(key, C.red(value));
 
 const data = JSON.parse(readFileSync("./input.json", { encoding: "utf8" }));
 console.log("data:", data);
@@ -43,47 +43,58 @@ const { connections, distances } = edges.reduce(
   { connections: {}, distances: {} }
 );
 
-console.log("connections:", connections);
-console.log("distances:", distances);
+console.log(connections);
+console.log(distances);
 
-const [train, capacity, initialLocation] = TRAIN.split(",");
-log("initialLocation:", initialLocation);
+const [train, , initialLocation] = TRAIN.split(","); // NOTE: ignoring capacity
+// log("initialLocation:", initialLocation);
 
 const moves = [];
 let time = 0;
 let trainLocation = initialLocation;
 
-function moveTrain(from, to, pkg = null) {
-  console.log(`move train from ${C.red(from)} to ${C.red(to)} with ${pkg}`);
+const getNext = (from, to) => {
+  let [next, alt] = connections[from];
 
-  let current = from;
-  let [next, alt] = connections[trainLocation];
-
-  log("next, alt:", next, alt);
+  if (alt === to) {
+    next = alt;
+  }
 
   if (alt && alt !== to) {
     // TODO:
     console.log("AT JUNCTION!");
   }
 
+  return next;
+};
+
+function moveTrain(from, to, pkg = null) {
+  console.log(`move train from ${C.red(from)} to ${C.red(to)} with ${pkg}`);
+
+  let current = from;
+  let next = getNext(from, to);
+
   while (current !== to) {
+    log("next:", next);
     moves.push(`W=${time}, T=${train}, N1=${current}, N2=${next}, P2=[${pkg}]`);
     trainLocation = next;
     time += distances[`${current}-${next}`];
     current = next;
-    next = connections[next];
+    next = getNext(next, to);
     log("trainLocation:", trainLocation);
     process.exit();
   }
 }
+// moveTrain("A", "B");
+moveTrain("A", "C");
 
-for (const delivery of deliveries) {
-  const [pkg, weight, src, dst] = delivery.split(",");
-  // move train to delivery pickup location
-  // moveTrain(trainLocation, src);
-
-  // move train to destination
-  moveTrain(trainLocation, dst, pkg);
-}
+// for (const delivery of deliveries) {
+//   const [pkg, weight, src, dst] = delivery.split(",");
+//   // move train to delivery pickup location
+//   // moveTrain(trainLocation, src);
+//
+//   // move train to destination
+//   moveTrain(trainLocation, dst, pkg);
+// }
 
 console.log("moves:", moves);
