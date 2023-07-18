@@ -91,3 +91,23 @@ that must be delivered to station `C`
 `W=60, T=Q1, N1=B, P1=[], N2=C, P2=[K1]`
 
 // Takes `70` minutes total
+
+---
+
+    {
+      "stations": ["A", "B", "C"],
+      "edges": ["E1, A, B, 30", "E2, B, C, 10"],
+      "deliveries": ["K1, 5, A, C"],
+      "trains": ["Q1, 6, B"]
+    }
+
+    [
+      "W=0,  T=Q1, N1=B, P1=[],   N2=A, P2=[]",
+      "W=30, T=Q1, N1=A, P1=[K1], N2=B, P2=[]",
+      "W=60, T=Q1, N1=B, P1=[],   N2=C, P2=[K1]"
+    ]
+
+    {
+      "A": "B",
+      "B": "C"
+    }

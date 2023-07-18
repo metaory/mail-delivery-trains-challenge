@@ -1,9 +1,9 @@
 {
   "stations": ["A", "B", "C"],
 
-  "edges": ["E1, A, B, 30", "E2, B, C, 10"],
+  "edges": ["E1,A,B,30", "E2,B,C,10"],
 
-  "deliveries": ["K1, 5, A, C"],
+  "deliveries": ["K1,5,A,C"],
 
-  "trains": ["Q1, 6, B"]
+  "trains": ["Q1,6,B"]
 }
