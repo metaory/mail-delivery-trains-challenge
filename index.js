@@ -3,7 +3,14 @@ import { readFileSync } from "node:fs";
 
 console.clear();
 
-const log = (key, value) => console.log(key, C.red(value));
+// const log = (key, value) => console.log(key, C.red(value));
+function log(tpl, ...vars) {
+  for (const [i, key] of tpl.entries()) {
+    if (!key) continue;
+    process.stdout.write(`${key}${C.red(vars[i])}`);
+  }
+  process.stdout.write("\n");
+}
 
 const data = JSON.parse(readFileSync("./input.json", { encoding: "utf8" }));
 console.log("data:", data);
@@ -62,7 +69,7 @@ const getNext = (from, to) => {
   }
 
   if (alt && alt !== to) {
-    // TODO: traverse both till
+    // TODO: greedy traverse both end
     console.log("AT JUNCTION!");
   }
 
@@ -70,19 +77,20 @@ const getNext = (from, to) => {
 };
 
 function moveTrain(from, to, pkg = null) {
-  console.log(`move train from ${C.red(from)} to ${C.red(to)} with ${pkg}`);
+  // console.log(`move train from ${C.red(from)} to ${C.red(to)} with ${pkg}`);
+  log`move train from ${from} to ${to} with ${pkg}`;
 
   let current = from;
   let next = getNext(from, to);
 
   while (current !== to) {
-    log("next:", next);
+    log`next: ${next}`;
     moves.push(`W=${time}, T=${train}, N1=${current}, N2=${next}, P2=[${pkg}]`);
     time += distances[`${current}-${next}`];
     current = next;
     trainLocation = current;
     next = getNext(current, to);
-    log("trainLocation:", trainLocation);
+    log`trainLocation: ${trainLocation}`;
     // process.exit();
   }
 }
