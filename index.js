@@ -3,11 +3,17 @@ import { readFileSync } from "node:fs";
 
 console.clear();
 
-// Debug logger tag function
+// Debug: print a line separator filling terminal columns
+const logSeparator = (char = "#") =>
+  console.log(
+    Array.from({ length: process.stdout.columns }).fill(char).join("")
+  );
+
+// Debug: logger tag function
 function log(tpl, ...vars) {
   for (const [i, key] of tpl.entries()) {
     if (!key) continue;
-    process.stdout.write(`${key}${C.red.bold(vars[i])}`);
+    process.stdout.write(`${key}${C.red.bold(vars[i] ?? "")}`);
   }
   process.stdout.write("\n");
 }
@@ -36,7 +42,7 @@ const {
 
 // NOTE: we'll also ignore weight constraint entirely
 
-// Reduce input to prepare connection map and distances
+// Reduce input edges to produce connection-map and distances
 const { connections, distances } = edges.reduce(
   (acc, cur) => {
     const [, from, to, distance] = cur.split(",");
@@ -77,7 +83,7 @@ const getNext = (from, to) => {
     next = alt;
   }
 
-  // Dont know which direction to go
+  // Dont know which direction to go?
   if (alt && alt !== to) {
     // TODO: greedy traverse both end
     // TODO: figure out which direction to go!!!
@@ -114,7 +120,11 @@ function moveTrain(to, pkg = null) {
     log`current: ${current}`;
 
     // NOTE: Temporary for debug purposes
-    if (DEBUG_ESCAPE_HATCH > 10) process.exit();
+    if (DEBUG_ESCAPE_HATCH > 10) {
+      console.error(C.red.bold("REACHED ESCAPE HATCH LIMIT!"), "exiting...");
+      process.exit();
+    }
+    logSeparator("-");
   }
 }
 
@@ -128,7 +138,7 @@ function moveTrain(to, pkg = null) {
 // Iterate over deliveries
 for (const delivery of deliveries) {
   // Destructure delivery detail
-  const [pkg, weight, src, dst] = delivery.split(",");
+  const [pkg, , src, dst] = delivery.split(","); // NOTE: ignoring weight
 
   // Move train to delivery pickup location
   moveTrain(src);
@@ -137,9 +147,7 @@ for (const delivery of deliveries) {
   moveTrain(dst, pkg);
 }
 
-console.log("------------------------");
-console.log("-RESULT-----------------");
-console.log("------------------------");
+logSeparator();
 
 // Output the result
 console.log(moves);
