@@ -36,13 +36,21 @@ console.log("input:", input);
 
 // Destructure what we need from input
 const {
-  // stations, // NOTE: we dont need this!
+  stations,
   edges,
   deliveries,
   trains: [TRAIN], // NOTE: To simplify; lets imagine there is only one train!
 } = input;
 
 // NOTE: we'll also ignore the weight constraint entirely
+
+// Reduce input stations to produce positions
+const positions = stations.reduce((acc, cur, i) => {
+  acc[cur] = i;
+  return acc;
+}, {});
+console.log("positions:", positions);
+// { A: 0, B: 1, C: 2, D: 3 }
 
 // Reduce input edges to produce connection-map and distances
 const { connections, distances } = edges.reduce(
@@ -68,10 +76,10 @@ console.log(distances);
 
 // Destructure train name and its initial language
 const [train, , initialLocation] = TRAIN.split(","); // NOTE: ignoring capacity
-`initialLocation: ${initialLocation}`;
+log`initialLocation: ${initialLocation}`;
 
 // Our global state
-const ESCAPE_HATCH_LIMIT = 5;
+const ESCAPE_HATCH_LIMIT = edges.length;
 const moves = [];
 let time = 0;
 let current = initialLocation;
@@ -90,13 +98,18 @@ const getNext = (to) => {
     return alt;
   }
 
-  // Dont know which direction to go?
-  // TODO: greedy traverse both end
-  // TODO: figure out which direction to go!!!
-  log`AT JUNCTION!`;
-  log`currently at ${current}; possibilities are ${next} and ${alt}`;
-  process.exit(); // TODO: do something!
+  const currentPosition = positions[current];
+  const destinationPosition = positions[to];
 
+  log`current position is: ${currentPosition}`;
+  log`destination position is: ${destinationPosition}`;
+
+  // Go right
+  if (destinationPosition > currentPosition) {
+    return alt;
+  }
+
+  // Go left
   return next;
 };
 
@@ -139,20 +152,20 @@ function moveTrain(to, pkg = null) {
 // moveTrain("B");
 // moveTrain("C");
 // moveTrain("A");
-moveTrain("D");
+// moveTrain("D");
 // ^^^^^^^^^^^^^^^^^^^
 
-// // Iterate over deliveries
-// for (const delivery of deliveries) {
-//   // Destructure delivery detail
-//   const [pkg, , src, dst] = delivery.split(","); // NOTE: ignoring weight
-//
-//   // Move train to delivery pickup location
-//   moveTrain(src);
-//
-//   // Move train to destination
-//   moveTrain(dst, pkg);
-// }
+// Iterate over deliveries
+for (const delivery of deliveries) {
+  // Destructure delivery detail
+  const [pkg, , src, dst] = delivery.split(","); // NOTE: ignoring weight
+
+  // Move train to delivery pickup location
+  moveTrain(src);
+
+  // Move train to destination
+  moveTrain(dst, pkg);
+}
 
 logSeparator();
 
