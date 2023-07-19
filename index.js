@@ -136,7 +136,7 @@ function moveTrain(train, to, pkg = null) {
   // NOTE: Debug: emergency circuit breaker
   let DEBUG_ESCAPE_HATCH_COUNTER = 0;
 
-  // Move untill we've reached destinations
+  // Move until we've reached destinations
   while (current !== to) {
     // NOTE: Debug: Increment circuit breaker counter
     DEBUG_ESCAPE_HATCH_COUNTER++;
