@@ -29,7 +29,7 @@ const catchFileNotFound = (path) =>
   });
 
 // Input path
-const path = process.argv[2] ?? "input.json";
+const path = process.argv[2] ?? "input-basic.json";
 log`input path: ${path}`;
 
 // Debug: Check if provided input path exists
@@ -54,14 +54,7 @@ console.log(input);
 console.time("BENCH");
 
 // Destructure what we need from input
-const {
-  stations,
-  edges,
-  deliveries,
-  trains: [TRAIN], // NOTE: To simplify; lets imagine there is only one train!
-} = input;
-
-// NOTE: we'll also ignore the weight constraint entirely!
+const { stations, edges, deliveries, trains } = input;
 
 // Reduce input stations to produce positions
 const positions = stations.reduce((acc, cur, i) => {
@@ -94,15 +87,11 @@ console.log(connections);
 console.log(distances);
 // { 'A-B': 30, 'B-A': 30, 'B-C': 10, 'C-B': 10, 'C-D': 40, 'D-C': 40 }
 
-// Destructure train name and its initial location
-const [train, , initialLocation] = TRAIN.split(","); // NOTE: ignoring capacity
-log`initialLocation: ${initialLocation}`;
-
 // Our global state
 const DEBUG_ESCAPE_HATCH_LIMIT = edges.length;
 const moves = [];
 let time = 0;
-let current = initialLocation;
+let current;
 
 // Return the immediate next possible move
 const getNext = (to) => {
@@ -136,8 +125,8 @@ const getNext = (to) => {
 };
 
 // Move the train towards a destination ( ? -> F )
-function moveTrain(to, pkg = null) {
-  log`move train from ${current} to ${to} with ${pkg}`;
+function moveTrain(train, to, pkg = null) {
+  log`move ${train} from ${current} to ${to} with ${pkg}`;
 
   // Our local state
   let next = getNext(to);
@@ -174,13 +163,31 @@ function moveTrain(to, pkg = null) {
 // Iterate over deliveries
 for (const delivery of deliveries) {
   // Destructure delivery detail
-  const [pkg, , src, dst] = delivery.split(","); // NOTE: ignoring weight
+  const [pkg, weight, src, dst] = delivery.split(",");
+
+  // Pick a train with enough capacity
+  const train = trains.find((train) => {
+    const [, capacity] = train.split(",");
+    return capacity >= weight;
+  });
+
+  // Catch when there is no train to hold the weight
+  if (!train) {
+    console.error(C.red.bold("FOUND NO TRAIN WITH ENOUGH CAPACITY!"));
+    process.exit(1);
+  }
+
+  // Destructure train detail
+  const [trainName, , location] = train.split(",");
+
+  // Set current location
+  current = location;
 
   // Move train to delivery pickup location
-  moveTrain(src);
+  moveTrain(trainName, src);
 
   // Move train to destination
-  moveTrain(dst, pkg);
+  moveTrain(trainName, dst, pkg);
 }
 
 logSeparator();
@@ -214,3 +221,8 @@ log`Solution time is: ${solutionTime}`;
 // Solution benchmark
 console.timeEnd("BENCH");
 // BENCH: ~2.00ms
+
+// *********************************** //
+// NOTE: This is not an optimal solution;
+// it does not cater the possibility that a train can hold multiple packages
+// so that the optimal route might be to make multiple pickups before delivering
