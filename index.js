@@ -93,7 +93,7 @@ const getNext = (from, to) => {
   return next;
 };
 
-// Move the train between two points ( A -> F )
+// Move the train towards a destination ( ? -> F )
 function moveTrain(to, pkg = null) {
   log`move train from ${current} to ${to} with ${pkg}`;
 
