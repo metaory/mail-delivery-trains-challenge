@@ -75,7 +75,7 @@ console.log(connections);
 console.log(distances);
 // { 'A-B': 30, 'B-A': 30, 'B-C': 10, 'C-B': 10, 'C-D': 40, 'D-C': 40 }
 
-// Destructure train name and its initial language
+// Destructure train name and its initial location
 const [train, , initialLocation] = TRAIN.split(","); // NOTE: ignoring capacity
 log`initialLocation: ${initialLocation}`;
 
