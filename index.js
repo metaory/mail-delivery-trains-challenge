@@ -2,7 +2,8 @@ import C from "chalk";
 import { readFileSync } from "node:fs";
 
 console.clear();
-console.time("BENCH");
+
+// NOTE: Runner preprations
 
 // Debug: print a line separator filling terminal columns
 const logSeparator = (char = "#") =>
@@ -34,6 +35,10 @@ console.log("input:", input);
 // ************************ //
 // ************************ //
 // ************************ //
+
+// NOTE: Begin solution
+
+console.time("BENCH");
 
 // Destructure what we need from input
 const {
