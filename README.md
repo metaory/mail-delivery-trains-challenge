@@ -150,4 +150,4 @@ _We like the best solution possible, but correctness is more important than opti
       'W=60, T=Q1, N1=B, N2=C, P2=[K1]'
     ]
 
-    Solution time is: 90
+    Solution time is: 70

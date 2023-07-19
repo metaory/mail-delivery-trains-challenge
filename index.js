@@ -190,13 +190,18 @@ console.log(moves);
   ]
 */
 
-// Reduce the entire journey time taken
-const solutionTime = moves.reduce((acc, cur) => {
-  const [w] = cur.split(",");
-  const [, time] = w.split("=");
+// Return the entire journey time taken
+function getSolutionTime() {
+  const finalMove = [...moves].pop();
+  const [W, , N1, N2] = finalMove.split(",");
+  const [, time] = W.split("=");
+  const [, n1] = N1.split("=");
+  const [, n2] = N2.split("=");
 
-  return acc + Number(time);
-}, 0);
+  return Number(time) + distances[`${n1}-${n2}`];
+}
+
+const solutionTime = getSolutionTime();
 
 log`Solution time is: ${solutionTime}`;
 // Solution time is: 90
