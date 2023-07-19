@@ -131,28 +131,30 @@ _We like the best solution possible, but correctness is more important than opti
 
 ---
 
-    // input
-    {
-      "stations": ["A", "B", "C", "D"],
-      "edges": ["E1,A,B,30", "E2,B,C,10", "E3,C,D,40"],
-      "deliveries": ["K1,5,A,C"],
-      "trains": ["Q1,6,B"]
-    }
+```javascript
+// input
+{
+  "stations": ["A", "B", "C", "D"],
+  "edges": ["E1,A,B,30", "E2,B,C,10", "E3,C,D,40"],
+  "deliveries": ["K1,5,A,C"],
+  "trains": ["Q1,6,B"]
+}
 
-    // positions
-    { A: 0, B: 1, C: 2, D: 3 }
+// positions
+{ A: 0, B: 1, C: 2, D: 3 }
 
-    // connections
-    { A: [ 'B' ], B: [ 'A', 'C' ], C: [ 'B', 'D' ], D: [ 'C' ] }
+// connections
+{ A: [ 'B' ], B: [ 'A', 'C' ], C: [ 'B', 'D' ], D: [ 'C' ] }
 
-    // distances
-    { 'A-B': 30, 'B-A': 30, 'B-C': 10, 'C-B': 10, 'C-D': 40, 'D-C': 40 }
+// distances
+{ 'A-B': 30, 'B-A': 30, 'B-C': 10, 'C-B': 10, 'C-D': 40, 'D-C': 40 }
 
-    // moves
-    [
-      'W=0, T=Q1, N1=B, N2=A, P2=[null]',
-      'W=30, T=Q1, N1=A, N2=B, P2=[K1]',
-      'W=60, T=Q1, N1=B, N2=C, P2=[K1]'
-    ]
+// moves
+[
+  'W=0, T=Q1, N1=B, N2=A, P2=[null]',
+  'W=30, T=Q1, N1=A, N2=B, P2=[K1]',
+  'W=60, T=Q1, N1=B, N2=C, P2=[K1]'
+]
 
-    Solution time is: 70
+Solution time is: 70
+```
