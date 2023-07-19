@@ -203,3 +203,4 @@ log`Solution time is: ${solutionTime}`;
 
 // Solution benchmark
 console.timeEnd("BENCH");
+// BENCH: ~2.00ms
