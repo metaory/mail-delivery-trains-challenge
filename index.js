@@ -53,7 +53,7 @@ console.log(input);
 
 console.time("BENCH");
 
-// Destructure what we need from input
+// Destructure input detail
 const { stations, edges, deliveries, trains } = input;
 
 // Reduce input stations to produce positions
