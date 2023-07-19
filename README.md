@@ -1,4 +1,4 @@
-# Program to control a network of autonomous mail delivery trains
+# Mail delivery trains challenge
 
 ## How to run
 
