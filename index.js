@@ -70,7 +70,8 @@ console.log(distances);
 const [train, , initialLocation] = TRAIN.split(","); // NOTE: ignoring capacity
 `initialLocation: ${initialLocation}`;
 
-// Out global state
+// Our global state
+const ESCAPE_HATCH_LIMIT = 5;
 const moves = [];
 let time = 0;
 let current = initialLocation;
@@ -78,19 +79,23 @@ let current = initialLocation;
 // Return the immediate next possible move
 const getNext = (to) => {
   // Possible next moves
-  let [next, alt] = connections[current];
+  const [next, alt] = connections[current];
+
+  if (next === to || !alt) {
+    return next;
+  }
 
   // The alteranative is the destination
   if (alt === to) {
-    next = alt;
+    return alt;
   }
 
   // Dont know which direction to go?
-  if (alt && alt !== to) {
-    // TODO: greedy traverse both end
-    // TODO: figure out which direction to go!!!
-    console.log("AT JUNCTION!");
-  }
+  // TODO: greedy traverse both end
+  // TODO: figure out which direction to go!!!
+  log`AT JUNCTION!`;
+  log`currently at ${current}; possibilities are ${next} and ${alt}`;
+  process.exit(); // TODO: do something!
 
   return next;
 };
@@ -122,7 +127,7 @@ function moveTrain(to, pkg = null) {
     log`current: ${current}`;
 
     // NOTE: Temporary for debug purposes
-    if (DEBUG_ESCAPE_HATCH > 10) {
+    if (DEBUG_ESCAPE_HATCH > ESCAPE_HATCH_LIMIT) {
       console.error(C.red.bold("REACHED ESCAPE HATCH LIMIT!"), "exiting...");
       process.exit();
     }
@@ -134,20 +139,20 @@ function moveTrain(to, pkg = null) {
 // moveTrain("B");
 // moveTrain("C");
 // moveTrain("A");
-// moveTrain("D");
+moveTrain("D");
 // ^^^^^^^^^^^^^^^^^^^
 
-// Iterate over deliveries
-for (const delivery of deliveries) {
-  // Destructure delivery detail
-  const [pkg, , src, dst] = delivery.split(","); // NOTE: ignoring weight
-
-  // Move train to delivery pickup location
-  moveTrain(src);
-
-  // Move train to destination
-  moveTrain(dst, pkg);
-}
+// // Iterate over deliveries
+// for (const delivery of deliveries) {
+//   // Destructure delivery detail
+//   const [pkg, , src, dst] = delivery.split(","); // NOTE: ignoring weight
+//
+//   // Move train to delivery pickup location
+//   moveTrain(src);
+//
+//   // Move train to destination
+//   moveTrain(dst, pkg);
+// }
 
 logSeparator();
 
