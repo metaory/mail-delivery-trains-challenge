@@ -1,9 +1,9 @@
 import C from "chalk";
-import { readFileSync } from "node:fs";
+import { readFile, stat } from "node:fs/promises";
 
 console.clear();
 
-// NOTE: Runner preprations
+// NOTE: Runner preprations ////////////////////////////////////////////////////
 
 // Debug: print a line separator filling terminal columns
 const logSeparator = (char = "#") =>
@@ -20,8 +20,22 @@ function log(tpl, ...vars) {
   process.stdout.write("\n");
 }
 
+// Debug: Catch file not found
+const catchFileNotFound = (path) =>
+  stat(path).catch(() => {
+    console.error(C.yellow(path), C.red("doesnt exist"));
+    process.exit(1);
+  });
+
+// Input path
+const path = process.argv[2] ?? "input.json";
+log`input path: ${path}`;
+
+// Debug: Check if provided input path exists
+catchFileNotFound(path);
+
 // Load up the input.json
-const input = JSON.parse(readFileSync("./input.json", { encoding: "utf8" }));
+const input = JSON.parse(await readFile(`./${path}`, { encoding: "utf8" }));
 
 console.log(input);
 /*
@@ -37,7 +51,7 @@ console.log(input);
 // ************************ //
 // ************************ //
 
-// NOTE: Begin solution
+// NOTE: Begin solution ////////////////////////////////////////////////////////
 
 console.time("BENCH");
 

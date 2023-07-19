@@ -6,8 +6,13 @@
 
 ## How to run
 
-    npm install
-    npm start
+```bash
+npm install
+npm start
+# or
+npm start input-basic.json
+npm start input-advance.json
+```
 
 ---
 
