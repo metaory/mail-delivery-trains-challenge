@@ -134,12 +134,12 @@ function moveTrain(train, to, pkg = null) {
   let next = getNext(to);
 
   // NOTE: Debug: emergency circuit breaker
-  let DEBUG_ESCAPE_HATCH = 0;
+  let DEBUG_ESCAPE_HATCH_COUNTER = 0;
 
   // Move untill we've reached destinations
   while (current !== to) {
     // NOTE: Debug: Increment circuit breaker counter
-    DEBUG_ESCAPE_HATCH++;
+    DEBUG_ESCAPE_HATCH_COUNTER++;
 
     log`next: ${next}`;
 
@@ -154,7 +154,7 @@ function moveTrain(train, to, pkg = null) {
     log`current: ${current}`;
 
     // NOTE: Debug: emergency circuit breaker
-    if (DEBUG_ESCAPE_HATCH > DEBUG_ESCAPE_HATCH_LIMIT) {
+    if (DEBUG_ESCAPE_HATCH_COUNTER > DEBUG_ESCAPE_HATCH_LIMIT) {
       console.error(C.red.bold("REACHED ESCAPE HATCH LIMIT!"), "exiting...");
       process.exit();
     }
