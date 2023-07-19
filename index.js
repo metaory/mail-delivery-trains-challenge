@@ -35,7 +35,7 @@ log`input path: ${path}`;
 // Debug: Check if provided input path exists
 catchFileNotFound(path);
 
-// Load up the input.json
+// Load up the input
 const input = JSON.parse(await readFile(`./${path}`, { encoding: "utf8" }));
 
 console.log(input);
