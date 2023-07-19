@@ -204,7 +204,7 @@ function getSolutionTime() {
 const solutionTime = getSolutionTime();
 
 log`Solution time is: ${solutionTime}`;
-// Solution time is: 90
+// Solution time is: 70
 
 // Solution benchmark
 console.timeEnd("BENCH");
