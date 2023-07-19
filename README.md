@@ -1,5 +1,9 @@
 # Mail delivery trains challenge
 
+## Dependencies
+
+- `Chalk` - Terminal string styling
+
 ## How to run
 
     npm install
