@@ -155,6 +155,7 @@ function moveTrain(train, to, pkg = null) {
 
     // NOTE: Debug: emergency circuit breaker
     if (DEBUG_ESCAPE_HATCH_COUNTER > DEBUG_ESCAPE_HATCH_LIMIT) {
+      console.info(C.cyan("There cant be more moves than possible edges"));
       console.error(C.red.bold("REACHED ESCAPE HATCH LIMIT!"), "exiting...");
       process.exit();
     }
