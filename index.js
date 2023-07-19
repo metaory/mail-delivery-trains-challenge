@@ -90,6 +90,7 @@ const getNext = (to) => {
   // Possible next moves
   const [next, alt] = connections[current];
 
+  // Next is destination or There is no alteranative
   if (next === to || !alt) {
     return next;
   }
