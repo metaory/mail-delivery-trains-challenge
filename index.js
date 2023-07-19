@@ -120,7 +120,7 @@ function moveTrain(to, pkg = null) {
   // Our local state
   let next = getNext(to);
 
-  // NOTE: Temporary for debug purposes
+  // NOTE: Debug: emergency circuit breaker
   let DEBUG_ESCAPE_HATCH = 0;
 
   // Move untill we've reached destinations
@@ -139,7 +139,7 @@ function moveTrain(to, pkg = null) {
 
     log`current: ${current}`;
 
-    // NOTE: Temporary for debug purposes
+    // NOTE: Debug: emergency circuit breaker
     if (DEBUG_ESCAPE_HATCH > ESCAPE_HATCH_LIMIT) {
       console.error(C.red.bold("REACHED ESCAPE HATCH LIMIT!"), "exiting...");
       process.exit();
