@@ -164,7 +164,7 @@ function moveTrain(to, pkg = null) {
 // moveTrain("C");
 // moveTrain("A");
 // moveTrain("D");
-// ^^^^^^^^^^^^^^^^^^^
+// ^^^^^^^^^^^^^^^
 
 // Iterate over deliveries
 for (const delivery of deliveries) {
