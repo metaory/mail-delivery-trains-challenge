@@ -126,6 +126,7 @@ _We like the best solution possible, but correctness is more important than opti
 
 ---
 
+    // input
     {
       "stations": ["A", "B", "C", "D"],
       "edges": ["E1,A,B,30", "E2,B,C,10", "E3,C,D,40"],
@@ -133,12 +134,20 @@ _We like the best solution possible, but correctness is more important than opti
       "trains": ["Q1,6,B"]
     }
 
+    // positions
+    { A: 0, B: 1, C: 2, D: 3 }
+
+    // connections
+    { A: [ 'B' ], B: [ 'A', 'C' ], C: [ 'B', 'D' ], D: [ 'C' ] }
+
+    // distances
+    { 'A-B': 30, 'B-A': 30, 'B-C': 10, 'C-B': 10, 'C-D': 40, 'D-C': 40 }
+
+    // moves
     [
       "W=0,  T=Q1, N1=B, P1=[],   N2=A, P2=[]",
       "W=30, T=Q1, N1=A, P1=[K1], N2=B, P2=[]",
       "W=60, T=Q1, N1=B, P1=[],   N2=C, P2=[K1]"
     ]
 
-    { A: [ 'B' ], B: [ 'A', 'C' ], C: [ 'B', 'D' ], D: [ 'C' ] }
-
-    { 'A-B': 30, 'B-A': 30, 'B-C': 10, 'C-B': 10, 'C-D': 40, 'D-C': 40 }
+    Solution time is: 90
