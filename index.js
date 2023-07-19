@@ -49,7 +49,7 @@ const {
   trains: [TRAIN], // NOTE: To simplify; lets imagine there is only one train!
 } = input;
 
-// NOTE: we'll also ignore the weight constraint entirely
+// NOTE: we'll also ignore the weight constraint entirely!
 
 // Reduce input stations to produce positions
 const positions = stations.reduce((acc, cur, i) => {
