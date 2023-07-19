@@ -13,7 +13,7 @@ const logSeparator = (char = "#") =>
 function log(tpl, ...vars) {
   for (const [i, key] of tpl.entries()) {
     if (!key) continue;
-    process.stdout.write(`${key}${C.red.bold(vars[i] ?? "")}`);
+    process.stdout.write(key + C.red.bold(vars[i] ?? ""));
   }
   process.stdout.write("\n");
 }
@@ -76,9 +76,9 @@ let time = 0;
 let current = initialLocation;
 
 // Return the immediate next possible move
-const getNext = (from, to) => {
+const getNext = (to) => {
   // Possible next moves
-  let [next, alt] = connections[from];
+  let [next, alt] = connections[current];
 
   // The alteranative is the destination
   if (alt === to) {
@@ -100,7 +100,7 @@ function moveTrain(to, pkg = null) {
   log`move train from ${current} to ${to} with ${pkg}`;
 
   // Our local state
-  let next = getNext(current, to);
+  let next = getNext(to);
 
   // NOTE: Temporary for debug purposes
   let DEBUG_ESCAPE_HATCH = 0;
@@ -117,7 +117,7 @@ function moveTrain(to, pkg = null) {
     // Update local state
     time += distances[`${current}-${next}`];
     current = next;
-    next = getNext(current, to);
+    next = getNext(to);
 
     log`current: ${current}`;
 
