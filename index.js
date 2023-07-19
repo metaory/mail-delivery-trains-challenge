@@ -100,7 +100,7 @@ const getNext = (to) => {
     return alt;
   }
 
-  // Source and Destination positions
+  // Source and destination positions
   const currentPosition = positions[current];
   const destinationPosition = positions[to];
 
