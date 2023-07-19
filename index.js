@@ -42,19 +42,19 @@ const {
   trains: [TRAIN], // NOTE: To simplify; lets imagine there is only one train!
 } = input;
 
-// NOTE: we'll also ignore weight constraint entirely
+// NOTE: we'll also ignore the weight constraint entirely
 
 // Reduce input edges to produce connection-map and distances
 const { connections, distances } = edges.reduce(
   (acc, cur) => {
-    const [, from, to, distance] = cur.split(",");
-    acc.connections[from] = acc.connections[from] ?? [];
-    acc.connections[to] = acc.connections[to] ?? [];
-    acc.connections[from].push(to);
-    acc.connections[to].push(from);
+    const [, src, dst, distance] = cur.split(",");
+    acc.connections[src] = acc.connections[src] ?? [];
+    acc.connections[dst] = acc.connections[dst] ?? [];
+    acc.connections[src].push(dst);
+    acc.connections[dst].push(src);
 
-    acc.distances[`${from}-${to}`] = +distance;
-    acc.distances[`${to}-${from}`] = +distance;
+    acc.distances[`${src}-${dst}`] = +distance;
+    acc.distances[`${dst}-${src}`] = +distance;
     return acc;
   },
   { connections: {}, distances: {} }
@@ -131,10 +131,10 @@ function moveTrain(to, pkg = null) {
 }
 
 // XXX: DEBUG:
-// moveTrain("A", "B");
-// moveTrain("A", "C");
-// moveTrain("B", "A");
-// moveTrain("A", "D");
+// moveTrain("B");
+// moveTrain("C");
+// moveTrain("A");
+// moveTrain("D");
 // ^^^^^^^^^^^^^^^^^^^
 
 // Iterate over deliveries
