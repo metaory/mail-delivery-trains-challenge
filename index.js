@@ -87,8 +87,10 @@ console.log(connections);
 console.log(distances);
 // { 'A-B': 30, 'B-A': 30, 'B-C': 10, 'C-B': 10, 'C-D': 40, 'D-C': 40 }
 
-// Our global state
+// There cant be more moves than possible edges
 const DEBUG_ESCAPE_HATCH_LIMIT = edges.length;
+
+// Our global state
 const moves = [];
 let time = 0;
 let current;
