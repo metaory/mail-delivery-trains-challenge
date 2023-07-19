@@ -128,6 +128,7 @@ function moveTrain(to, pkg = null) {
 
   // Move untill we've reached destinations
   while (current !== to) {
+    // NOTE: Debug: Increment circuit breaker counter
     DEBUG_ESCAPE_HATCH++;
 
     log`next: ${next}`;
