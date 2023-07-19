@@ -190,7 +190,7 @@ for (const delivery of deliveries) {
   // Move train to package pickup location
   moveTrain(trainName, src);
 
-  // Move train to package destination
+  // Move train to package destination location
   moveTrain(trainName, dst, pkg);
 }
 
