@@ -39,7 +39,7 @@ catchFileNotFound(path);
 const input = JSON.parse(await readFile(`./${path}`, { encoding: "utf8" }));
 
 console.log(input);
-/*
+/* input-basic.json
   {
     "stations": ["A", "B", "C", "D"],
     "edges": ["E1,A,B,30", "E2,B,C,10", "E3,C,D,40"],
