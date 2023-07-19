@@ -175,3 +175,10 @@ logSeparator();
 
 // Output the result
 console.log(moves);
+/*
+  [
+    'W=0, T=Q1, N1=B, N2=A, P2=[null]',
+    'W=30, T=Q1, N1=A, N2=B, P2=[K1]',
+    'W=60, T=Q1, N1=B, N2=C, P2=[K1]'
+  ]
+*/
