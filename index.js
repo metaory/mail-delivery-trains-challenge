@@ -80,7 +80,7 @@ const [train, , initialLocation] = TRAIN.split(","); // NOTE: ignoring capacity
 log`initialLocation: ${initialLocation}`;
 
 // Our global state
-const ESCAPE_HATCH_LIMIT = edges.length;
+const DEBUG_ESCAPE_HATCH_LIMIT = edges.length;
 const moves = [];
 let time = 0;
 let current = initialLocation;
@@ -143,7 +143,7 @@ function moveTrain(to, pkg = null) {
     log`current: ${current}`;
 
     // NOTE: Debug: emergency circuit breaker
-    if (DEBUG_ESCAPE_HATCH > ESCAPE_HATCH_LIMIT) {
+    if (DEBUG_ESCAPE_HATCH > DEBUG_ESCAPE_HATCH_LIMIT) {
       console.error(C.red.bold("REACHED ESCAPE HATCH LIMIT!"), "exiting...");
       process.exit();
     }
