@@ -31,6 +31,8 @@ console.log("input:", input);
 */
 
 // ************************ //
+// ************************ //
+// ************************ //
 
 // Destructure what we need from input
 const {
@@ -46,8 +48,8 @@ const {
 const { connections, distances } = edges.reduce(
   (acc, cur) => {
     const [, from, to, distance] = cur.split(",");
-    acc.connections[from] = acc.connections[from] || [];
-    acc.connections[to] = acc.connections[to] || [];
+    acc.connections[from] = acc.connections[from] ?? [];
+    acc.connections[to] = acc.connections[to] ?? [];
     acc.connections[from].push(to);
     acc.connections[to].push(from);
 
