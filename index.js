@@ -73,6 +73,8 @@ const getNext = (from, to) => {
     console.log("AT JUNCTION!");
   }
 
+  // TODO: decide which direction to go!!!
+
   return next;
 };
 
@@ -82,8 +84,10 @@ function moveTrain(from, to, pkg = null) {
 
   let current = from;
   let next = getNext(from, to);
+  let DEBUG_ESCAPE_HATCH = 0; // NOTE: temporary for debug purposes
 
   while (current !== to) {
+    DEBUG_ESCAPE_HATCH++;
     log`next: ${next}`;
     moves.push(`W=${time}, T=${train}, N1=${current}, N2=${next}, P2=[${pkg}]`);
     time += distances[`${current}-${next}`];
@@ -91,7 +95,7 @@ function moveTrain(from, to, pkg = null) {
     trainLocation = current;
     next = getNext(current, to);
     log`trainLocation: ${trainLocation}`;
-    // process.exit();
+    if (DEBUG_ESCAPE_HATCH > 10) process.exit(); // NOTE: temporary for debug
   }
 }
 // XXX: DEBUG:

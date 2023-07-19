@@ -1,3 +1,14 @@
+# Program to control a network of autonomous mail delivery trains
+
+## How to run
+
+    npm install
+    npm start
+
+---
+
+## Challenge
+
 _You have been asked to write a program to control a network of **autonomous mail delivery trains**_
 
 Each instance of this problem has:
