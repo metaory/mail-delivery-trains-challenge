@@ -2,6 +2,7 @@ import C from "chalk";
 import { readFileSync } from "node:fs";
 
 console.clear();
+console.time("BENCH");
 
 // Debug: print a line separator filling terminal columns
 const logSeparator = (char = "#") =>
@@ -182,3 +183,17 @@ console.log(moves);
     'W=60, T=Q1, N1=B, N2=C, P2=[K1]'
   ]
 */
+
+// Reduce the entire journey time taken
+const solutionTime = moves.reduce((acc, cur) => {
+  const [w] = cur.split(",");
+  const [, time] = w.split("=");
+
+  return acc + Number(time);
+}, 0);
+
+log`Solution time is: ${solutionTime}`;
+// Solution time is: 90
+
+// Solution benchmark
+console.timeEnd("BENCH");
