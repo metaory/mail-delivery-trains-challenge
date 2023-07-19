@@ -171,13 +171,6 @@ function moveTrain(to, pkg = null) {
   }
 }
 
-// XXX: DEBUG:
-// moveTrain("B");
-// moveTrain("C");
-// moveTrain("A");
-// moveTrain("D");
-// ^^^^^^^^^^^^^^^
-
 // Iterate over deliveries
 for (const delivery of deliveries) {
   // Destructure delivery detail
