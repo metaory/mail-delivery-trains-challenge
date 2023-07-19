@@ -49,7 +49,7 @@ const positions = stations.reduce((acc, cur, i) => {
   acc[cur] = i;
   return acc;
 }, {});
-console.log("positions:", positions);
+console.log(positions);
 // { A: 0, B: 1, C: 2, D: 3 }
 
 // Reduce input edges to produce connection-map and distances
