@@ -79,31 +79,48 @@ _We like the best solution possible, but correctness is more important than opti
 ---
 
 `3` // number of stations
+
 `A` // station name
+
 `B` // station name
+
 `C` // station name
 
+---
+
 `2` // number of edges
+
 `E1,A,B,30` // route from `A` to `B` that takes `30` minutes
+
 `E2,B,C,10` // route from `B` to `C` that takes `10` minutes
 
+---
+
 `1` // number of deliveries to be performed
-`K1,5,A,C` // package `K1` with weight `5` located currently at station `A`
-that must be delivered to station `C`
+
+`K1,5,A,C` // package `K1` with weight `5` located currently at station `A` that must be delivered to station `C`
+
+---
 
 `1` // number of trains
+
 `Q1,6,B` // train `Q1` with capacity `6` located at station `B`
 
 ---
 
 // Move `Q1` to `A` via `E1`, takes `30` minutes
+
 `W=0, T=Q1, N1=B, P1=[], N2=A, P2=[]`
 
 // Now move back to `B` Takes `30` minutes
+
 `W=30, T=Q1, N1=A, P1=[K1], N2=B, P2=[]`
 
 // Move to `C` and drop off - takes `10` minutes
+
 `W=60, T=Q1, N1=B, P1=[], N2=C, P2=[K1]`
+
+---
 
 // Takes `70` minutes total
 
