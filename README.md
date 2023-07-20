@@ -2,7 +2,7 @@
 
 ## Related
 
-- [advent-of-code](https://github.com/metaory/advent-of-code)
+- [metaory/advent-of-code](https://github.com/metaory/advent-of-code)
 
 ## Dependencies
 
