@@ -1,5 +1,9 @@
 # Mail delivery trains challenge
 
+## Related
+
+- [advent-of-code](https://github.com/metaory/advent-of-code)
+
 ## Dependencies
 
 - `Chalk` - Terminal string styling
