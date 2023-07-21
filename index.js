@@ -95,12 +95,15 @@ const trainLoads = trains.reduce((acc, cur) => {
 console.log(trainLoads);
 // { Q1: [] }
 
+// Load a package onto a train
 const loadPackage = (train, pkg) => {
   if (!trainLoads[train].includes(pkg)) {
     trainLoads[train].push(pkg);
     updateDeliveryStatus(pkg, STATUS.IN_FLIGHT);
   }
 };
+
+// Unload a package from a train
 const unloadPackage = (train, pkg) => {
   if (trainLoads[train].includes(pkg)) {
     trainLoads[train].pop();
