@@ -4,6 +4,10 @@
 
 - [metaory/advent-of-code](https://github.com/metaory/advent-of-code)
 
+## Requirements
+
+- Node 16+
+
 ## Dependencies
 
 - `Chalk` - Terminal string styling
