@@ -1,3 +1,19 @@
+/* This is an attempt at a more optimal solution;
+ *
+ * * While there are still deliveries to be made;
+ * 1. It starts off by selecting the first delivery item
+ * 2. Selects the closest train with enough capacity
+ * 3. Move selected train towards the pickup station
+ * 4. At each station along the way it attempts to pick more packages
+ *      if ?
+ *        train can fit &
+ *        package pickup is where train is &
+ *        package status is still waiting to be picked up &
+ *        package destination is in the same direction train is going & // TODO: <<
+ *        package destination is before the current train destination // TODO: <<
+ * 5. At each station along the way it drop off packages
+ *      remove the dropped packages from delivery list
+ * */
 import C from "chalk";
 import { readFile, stat } from "node:fs/promises";
 
@@ -417,4 +433,5 @@ log`Solution time is: ${solutionTime}`;
 
 // Solution benchmark
 console.timeEnd("BENCH");
-// BENCH: ~2.00ms
+// for input-advance.json:
+// BENCH: ~6.00ms
