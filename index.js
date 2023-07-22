@@ -177,14 +177,14 @@ const unloadPackage = (train, pkg) => {
   // Remove package from train loads
   const trainPkgIndex = trainLoads[train].findIndex((x) => x === pkg);
   trainLoads[train].splice(trainPkgIndex, 1);
-  // Mark package delivery status to delivered
-  deliveryStatus[pkg] = STATUS.DELIVERED;
   // Remove package from delivery list
   const pkgIndex = deliveries.findIndex((x) => {
     const [name] = x.split(",");
     return name === pkg;
   });
   deliveries.splice(pkgIndex, 1);
+  // Mark package delivery status to delivered
+  deliveryStatus[pkg] = STATUS.DELIVERED;
 };
 
 // Return package detail
