@@ -122,27 +122,6 @@ console.log(trainCapacities);
 console.log(trainLoads);
 // { Q1: [] }
 
-// Load a package onto a train
-const loadPackage = (train, pkg) => {
-  if (trainLoads[train].includes(pkg) === false) {
-    trainLoads[train].push(pkg);
-    updateDeliveryStatus(pkg, STATUS.IN_FLIGHT);
-  }
-};
-
-// Unload a package from a train
-const unloadPackage = (train, pkg) => {
-  if (trainLoads[train].includes(pkg)) {
-    trainLoads[train].pop();
-    updateDeliveryStatus(pkg, STATUS.DELIVERED);
-    const pkgIndex = deliveries.findIndex((x) => {
-      const [name] = x.split(",");
-      return name === pkg;
-    });
-    deliveries.splice(pkgIndex, 1);
-  }
-};
-
 // Reduce input stations to produce positions
 const positions = stations.reduce((acc, cur, i) => {
   acc[cur] = i;
@@ -173,6 +152,27 @@ console.log(connections);
 
 console.log(distances);
 // { 'A-B': 30, 'B-A': 30, 'B-C': 10, 'C-B': 10, 'C-D': 40, 'D-C': 40 }
+
+// Load a package onto a train
+const loadPackage = (train, pkg) => {
+  if (trainLoads[train].includes(pkg) === false) {
+    trainLoads[train].push(pkg);
+    updateDeliveryStatus(pkg, STATUS.IN_FLIGHT);
+  }
+};
+
+// Unload a package from a train
+const unloadPackage = (train, pkg) => {
+  if (trainLoads[train].includes(pkg)) {
+    trainLoads[train].pop();
+    updateDeliveryStatus(pkg, STATUS.DELIVERED);
+    const pkgIndex = deliveries.findIndex((x) => {
+      const [name] = x.split(",");
+      return name === pkg;
+    });
+    deliveries.splice(pkgIndex, 1);
+  }
+};
 
 // Return package detail
 const getPkgDetail = (pkgName) => {
