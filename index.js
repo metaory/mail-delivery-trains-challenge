@@ -164,7 +164,8 @@ const loadPackage = (train, pkg) => {
 // Unload a package from a train
 const unloadPackage = (train, pkg) => {
   if (trainLoads[train].includes(pkg)) {
-    trainLoads[train].pop();
+    const trainPkgIndex = trainLoads[train].findIndex((x) => x === pkg);
+    trainLoads[train].splice(trainPkgIndex, 1);
     updateDeliveryStatus(pkg, STATUS.DELIVERED);
     const pkgIndex = deliveries.findIndex((x) => {
       const [name] = x.split(",");
