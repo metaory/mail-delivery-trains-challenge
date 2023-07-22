@@ -170,9 +170,14 @@ const loadPackage = (train, pkg) => {
 // Unload a package from a train
 const unloadPackage = (train, pkg) => {
   if (trainLoads[train].includes(pkg)) {
+    // Remove package from train loads
     const trainPkgIndex = trainLoads[train].findIndex((x) => x === pkg);
     trainLoads[train].splice(trainPkgIndex, 1);
+
+    // Update delivery status for package
     updateDeliveryStatus(pkg, STATUS.DELIVERED);
+
+    // Remove package from delivery list
     const pkgIndex = deliveries.findIndex((x) => {
       const [name] = x.split(",");
       return name === pkg;
@@ -222,10 +227,12 @@ const packagesTrainCandidates = () =>
           diff = trainPos - pkgPos;
         }
 
+        // This diff is better than previous diff
         if (diff < _acc.distance) {
           _acc.candidate = _cur;
           _acc.distance = diff;
         }
+
         return _acc;
       },
       { candidate: null, distance: edges.length }
@@ -253,7 +260,7 @@ const moves = [];
 let time = 0;
 let current;
 
-// Return the immediate next possible move
+// Return the immediate next possible move and direction
 const getNext = (to) => {
   // Possible next moves
   const [next, alt] = connections[current];
@@ -330,6 +337,7 @@ function moveTrain(train, to) {
     const pickPackages = trainLoads[train].filter(
       (x) => getPkgDetail(x).from === current
     );
+
     // Filter packages that their dropoff is next
     const dropPackages = trainLoads[train].filter(
       (x) => getPkgDetail(x).to === next
@@ -418,9 +426,9 @@ logSeparator();
 console.log(moves);
 /*
   [
-    'W=0, T=Q1, N1=B, N2=A, P2=[null]',
-    'W=30, T=Q1, N1=A, N2=B, P2=[K1]',
-    'W=60, T=Q1, N1=B, N2=C, P2=[K1]'
+    'W=0, T=Q1, N1=B, P1=[], N2=A, P2=[]',
+    'W=30, T=Q1, N1=A, P1=[K1], N2=B, P2=[]',
+    'W=60, T=Q1, N1=B, P1=[], N2=C, P2=[K1]'
   ]
 */
 
@@ -437,8 +445,10 @@ function getSolutionTime() {
 const solutionTime = getSolutionTime();
 
 log`Solution time is: ${solutionTime}`;
+// for input-basic.json: 70
+// for input-advance.json: 250
 
 // Solution benchmark
 console.timeEnd("BENCH");
-// for input-advance.json:
-// BENCH: ~6.00ms
+// BENCH for input-basic.json: ~4.00ms
+// BENCH for input-advance.json: ~6.00ms
