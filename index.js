@@ -255,42 +255,6 @@ const packagesTrainCandidates = () =>
     return acc;
   }, {});
 
-logSeparator("_");
-
-// NOTE: Debug: There cant be more moves than possible edges
-const DEBUG_ESCAPE_HATCH_LIMIT = edges.length;
-
-// ··· DRIVERS ··························································· //
-
-// Our global state
-const moves = [];
-let time = 0;
-let current;
-
-// Return the immediate next possible move and direction
-const getNext = (to) => {
-  // Possible next moves
-  const [next, alt] = connections[current];
-
-  // Next is destination or There is no alteranative
-  if (next === to || !alt) {
-    return [DIRECTIONS.LEFT, next];
-  }
-
-  // The alteranative is the destination
-  if (alt === to) {
-    return [DIRECTIONS.RIGHT, alt];
-  }
-
-  // Go right
-  if (positions[to] > positions[current]) {
-    return [DIRECTIONS.RIGHT, alt];
-  }
-
-  // Go left
-  return [DIRECTIONS.LEFT, next];
-};
-
 // Attempt to pickup packages along the way
 const pickupPackages = (train, direction) => {
   log`if ${train} moving ${direction.toString()} can load up new package`;
@@ -324,6 +288,42 @@ const pickupPackages = (train, direction) => {
     loadPackage(train, name);
   }
 };
+
+logSeparator("_");
+
+// ··· DRIVERS ··························································· //
+
+// Our global state
+const moves = [];
+let time = 0;
+let current;
+
+// Return the immediate next possible move and direction
+const getNext = (to) => {
+  // Possible next moves
+  const [next, alt] = connections[current];
+
+  // Next is destination or There is no alteranative
+  if (next === to || !alt) {
+    return [DIRECTIONS.LEFT, next];
+  }
+
+  // The alteranative is the destination
+  if (alt === to) {
+    return [DIRECTIONS.RIGHT, alt];
+  }
+
+  // Go right
+  if (positions[to] > positions[current]) {
+    return [DIRECTIONS.RIGHT, alt];
+  }
+
+  // Go left
+  return [DIRECTIONS.LEFT, next];
+};
+
+// NOTE: Debug: There cant be more moves than possible edges
+const DEBUG_ESCAPE_HATCH_LIMIT = edges.length;
 
 // Move the train towards a destination ( ? -> F )
 function moveTrain(train, to) {
