@@ -162,7 +162,10 @@ console.log(distances);
 // Load a package onto a train
 const loadPackage = (train, pkg) => {
   if (trainLoads[train].includes(pkg) === false) {
+    // Add package to train loads
     trainLoads[train].push(pkg);
+
+    // Mark package delivery status to in-flight
     updateDeliveryStatus(pkg, STATUS.IN_FLIGHT);
   }
 };
@@ -174,7 +177,7 @@ const unloadPackage = (train, pkg) => {
     const trainPkgIndex = trainLoads[train].findIndex((x) => x === pkg);
     trainLoads[train].splice(trainPkgIndex, 1);
 
-    // Update delivery status for package
+    // Mark package delivery status to delivered
     updateDeliveryStatus(pkg, STATUS.DELIVERED);
 
     // Remove package from delivery list
