@@ -6,7 +6,7 @@
  * 3. Move selected train towards the pickup station
  * 4. At each station along the way it attempts to pick more packages
  *      if ?
- *        train can fit &
+ *        train have enough capacity &
  *        package pickup is where train is &
  *        package status is still waiting to be picked up &
  *        package destination is in the same direction train is going & // TODO: <<
