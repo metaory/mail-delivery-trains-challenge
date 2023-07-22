@@ -157,11 +157,23 @@ _We like the best solution possible, but correctness is more important than opti
 // distances
 { 'A-B': 30, 'B-A': 30, 'B-C': 10, 'C-B': 10, 'C-D': 40, 'D-C': 40 }
 
+// delivery status
+{ K1: Symbol(AT_PICKUP), K2: Symbol(IN_FLIGHT) }
+
+// train stations
+{ Q1: 'B' }
+
+// train capacities
+{ Q1: 6 }
+
+// train loads
+{ Q1: [] }
+
 // moves
 [
-  'W=0, T=Q1, N1=B, N2=A, P2=[null]',
-  'W=30, T=Q1, N1=A, N2=B, P2=[K1]',
-  'W=60, T=Q1, N1=B, N2=C, P2=[K1]'
+  'W=0, T=Q1, N1=B, P1=[], N2=A, P2=[]',
+  'W=30, T=Q1, N1=A, P1=[K1], N2=B, P2=[]',
+  'W=60, T=Q1, N1=B, P1=[], N2=C, P2=[K1]'
 ]
 
 Solution time is: 70
