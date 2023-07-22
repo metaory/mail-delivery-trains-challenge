@@ -85,12 +85,23 @@ const updateDeliveryStatus = (pkg, status) => {
   deliveryStatus[pkg] = status;
 };
 
-// Reduce to produce trains current load
-const trainLoads = trains.reduce((acc, cur) => {
-  const [trainName] = cur.split(",");
-  acc[trainName] = [];
-  return acc;
-}, {});
+// Reduce to produce train stations, capacities, loads
+const { trainStations, trainCapacities, trainLoads } = trains.reduce(
+  (acc, cur) => {
+    const [train, capacity, station] = cur.split(",");
+    acc.trainStations[train] = station;
+    acc.trainCapacities[train] = +capacity;
+    acc.trainLoads[train] = [];
+    return acc;
+  },
+  { trainStations: {}, trainCapacities: {}, trainLoads: {} }
+);
+
+console.log(trainStations);
+// { Q1: 'B' }
+
+console.log(trainCapacities);
+// { Q1: 6 }
 
 console.log(trainLoads);
 // { Q1: [] }
@@ -146,23 +157,6 @@ console.log(connections);
 
 console.log(distances);
 // { 'A-B': 30, 'B-A': 30, 'B-C': 10, 'C-B': 10, 'C-D': 40, 'D-C': 40 }
-
-// Reduce to produce train positions
-const { trainStations, trainCapacities } = trains.reduce(
-  (acc, cur) => {
-    const [train, capacity, station] = cur.split(",");
-    acc.trainStations[train] = station;
-    acc.trainCapacities[train] = +capacity;
-    return acc;
-  },
-  { trainStations: {}, trainCapacities: {} }
-);
-
-console.log(trainStations);
-// { Q1: 'B' }
-
-console.log(trainCapacities);
-// { Q1: 6 }
 
 // Return package detail
 const getPkgDetail = (pkgName) => {
