@@ -244,7 +244,7 @@ const packagesTrainCandidates = () =>
 
     const candidateCapacity = trainCapacities[candidate];
 
-    // Package weight is more than train capacity
+    // Package weight is more than candidate train capacity
     if (weight > candidateCapacity) {
       // Find train with enough capacity regardless of its distance
       acc[name] = getTrainForWeight(weight);
