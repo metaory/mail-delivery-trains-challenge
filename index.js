@@ -205,11 +205,11 @@ const getTrainRemainingCapacity = (train) =>
   // Train current total load
   trainLoads[train].reduce((acc, cur) => acc + getPkgDetail(cur).weight, 0);
 
-// Returns a train with enough capacity
+// Return a train with enough capacity
 const getTrainForWeight = (weight) =>
   Object.keys(trainLoads).find((train) => trainCapacities[train] >= weight);
 
-// Returns positive diff between two numbers
+// Return positive diff between two numbers
 const getDiff = (a, b) => (a > b ? a - b : b - a);
 
 // Reduce to produce a map of closest train for each package
