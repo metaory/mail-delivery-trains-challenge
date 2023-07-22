@@ -208,7 +208,7 @@ const getTrainRemainingCapacity = (trainName) =>
   trainLoads[trainName].reduce((acc, cur) => acc + getPkgDetail(cur).weight, 0);
 
 // Returns a train with enough capacity
-const getTrain = (weight) =>
+const getTrainForWeight = (weight) =>
   Object.keys(trainLoads).find((train) => trainCapacities[train] >= weight);
 
 // Reduce to produce a map of closest train for each package
@@ -245,7 +245,7 @@ const packagesTrainCandidates = () =>
 
     if (weight > candidateCapacity) {
       // Find train with enough capacity regardless of its distance
-      acc[name] = getTrain(weight);
+      acc[name] = getTrainForWeight(weight);
     } else {
       acc[name] = candidate;
     }
@@ -311,6 +311,7 @@ const pickupPackages = (train, direction) => {
     return enoughCapacity && atPickup && isHere;
   });
 
+  // We found a package candidate
   if (packageCandidate) {
     const [name] = packageCandidate.split(",");
     log`found possible package candidate: ${name}`;
