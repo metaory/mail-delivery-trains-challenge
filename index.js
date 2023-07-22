@@ -358,7 +358,14 @@ function moveTrain(train, to) {
 
     // Append the output
     moves.push(
-      `W=${time}, T=${train}, N1=${current}, P1=[${pickPackages}], N2=${next}, P2=[${dropPackages}]`
+      [
+        `W=${time}`,
+        `T=${train}`,
+        `N1=${current}`,
+        `P1=[${pickPackages}]`,
+        `N2=${next}`,
+        `P2=[${dropPackages}]`,
+      ].join(", ")
     );
 
     // Update state
