@@ -97,7 +97,7 @@ console.log(trainLoads);
 
 // Load a package onto a train
 const loadPackage = (train, pkg) => {
-  if (!trainLoads[train].includes(pkg)) {
+  if (trainLoads[train].includes(pkg) === false) {
     trainLoads[train].push(pkg);
     updateDeliveryStatus(pkg, STATUS.IN_FLIGHT);
   }
@@ -108,6 +108,11 @@ const unloadPackage = (train, pkg) => {
   if (trainLoads[train].includes(pkg)) {
     trainLoads[train].pop();
     updateDeliveryStatus(pkg, STATUS.DELIVERED);
+    const pkgIndex = deliveries.findIndex((x) => {
+      const [name] = x.split(",");
+      return name === pkg;
+    });
+    deliveries.splice(pkgIndex, 1);
   }
 };
 
@@ -143,54 +148,54 @@ console.log(distances);
 // { 'A-B': 30, 'B-A': 30, 'B-C': 10, 'C-B': 10, 'C-D': 40, 'D-C': 40 }
 
 // Reduce to produce train positions
-const trainPositions = trains.reduce((acc, cur) => {
-  const [train, , station] = cur.split(",");
-  acc[train] = station;
-  return acc;
-}, {});
+const { trainStations, trainCapacities } = trains.reduce(
+  (acc, cur) => {
+    const [train, capacity, station] = cur.split(",");
+    acc.trainStations[train] = station;
+    acc.trainCapacities[train] = +capacity;
+    return acc;
+  },
+  { trainStations: {}, trainCapacities: {} }
+);
 
-console.log(trainPositions);
-// { Q1: 'B', Q2: 'A' }
+console.log(trainStations);
+// { Q1: 'B' }
+
+console.log(trainCapacities);
+// { Q1: 6 }
 
 // Return package detail
 const getPkgDetail = (pkgName) => {
   const pkg = deliveries.find((x) => {
     const [name] = x.split(",");
-    return name === pkgName;
+    return x === pkgName || name === pkgName;
   });
+  if (!pkg) return {};
   const [name, weight, from, to] = pkg.split(",");
-  return { name, weight, from, to };
-};
-
-// Return train capacity
-const getTrainCapacity = (trainName) => {
-  const train = trains.find((x) => {
-    const [name] = x.split(",");
-    return name === trainName;
-  });
-  const [, capacity] = train.split(",");
-  return +capacity;
+  return { name, weight: +weight, from, to };
 };
 
 // Return train remaining capacity
 const getTrainRemainingCapacity = (trainName) =>
-  getTrainCapacity(trainName) -
+  // Train full capacity
+  trainCapacities[trainName] -
+  // Train current total load
   trainLoads[trainName].reduce((acc, cur) => acc + getPkgDetail(cur).weight, 0);
 
 // Returns a train with enough capacity
 const getTrain = (weight) =>
-  Object.keys(trainLoads).find((train) => getTrainCapacity(train) >= weight);
+  Object.keys(trainLoads).find((train) => trainCapacities[train] >= weight);
 
 // Reduce to produce a map of closest train for each package
 const packagesTrainCandidates = () =>
   deliveries.reduce((acc, cur) => {
-    const [pkg, weight, pickupStation] = cur.split(",");
-    const pkgPos = positions[pickupStation];
+    const { name, weight, from } = getPkgDetail(cur);
+    const pkgPos = positions[from];
 
     // Reduce trains to pick the closest to current package
-    const closestTrain = Object.keys(trainPositions).reduce(
+    const { candidate } = Object.keys(trainStations).reduce(
       (_acc, _cur) => {
-        const trainStation = trainPositions[_cur];
+        const trainStation = trainStations[_cur];
         const trainPos = positions[trainStation];
 
         let diff;
@@ -210,14 +215,13 @@ const packagesTrainCandidates = () =>
       { candidate: null, distance: edges.length }
     );
 
-    const { candidate } = closestTrain;
-    const candidateCapacity = getTrainCapacity(candidate);
+    const candidateCapacity = trainCapacities[candidate];
 
     if (weight > candidateCapacity) {
       // Find train with enough capacity regardless of its distance
-      acc[pkg] = getTrain(weight);
+      acc[name] = getTrain(weight);
     } else {
-      acc[pkg] = candidate;
+      acc[name] = candidate;
     }
 
     return acc;
@@ -267,28 +271,29 @@ const pickupPackages = (train) => {
 
   // Select a package candidate for train
   const packageCandidate = deliveries.find((x) => {
-    const [pkg, weight, from] = x.split(",");
+    const { name, weight, from } = getPkgDetail(x);
 
     // Does it have enough remaining capacity?
     const enoughCapacity = remainingCapacity >= weight;
     // Is it still at pickup?
-    const atPickup = deliveryStatus[pkg] === STATUS.AT_PICKUP;
+    const atPickup = deliveryStatus[name] === STATUS.AT_PICKUP;
     // Is package pickup location is where we are?
     const isHere = from === current;
+    // TODO: check for direction the current is going
+    // const sameDirection = true
 
     return enoughCapacity && atPickup && isHere;
   });
 
   if (packageCandidate) {
-    const [pkg] = packageCandidate.split(",");
-    log`found possible package candidate: ${pkg}`;
-    loadPackage(train, pkg);
+    const [name] = packageCandidate.split(",");
+    log`found possible package candidate: ${name}`;
+    loadPackage(train, name);
   }
 };
 
 // Move the train towards a destination ( ? -> F )
 function moveTrain(train, to) {
-  // let packages = [pkg];
   log`move ${train} from ${current} to ${to}`;
 
   // Our local state
@@ -314,6 +319,9 @@ function moveTrain(train, to) {
       (x) => getPkgDetail(x).to === next
     );
 
+    // Remove package from train loads and deliveries
+    dropPackages.forEach((x) => unloadPackage(train, x));
+
     // Append the output
     moves.push(
       `W=${time}, T=${train}, N1=${current}, P1=[${pickPackages}], N2=${next}, P2=[${dropPackages}]`
@@ -323,7 +331,7 @@ function moveTrain(train, to) {
     time += distances[`${current}-${next}`];
     current = next;
     next = getNext(to);
-    trainPositions[train] = current;
+    trainStations[train] = current;
 
     // NOTE: Debug: emergency circuit breaker
     // This should never happen
@@ -356,8 +364,12 @@ while (deliveries.length) {
   }
 
   // Pick the last package
-  const pick = deliveries[deliveries.length - 1];
-  const [pkg, , pickupStation, dropoffStation] = pick.split(",");
+  const [pick] = deliveries;
+  const {
+    name: pkg,
+    from: pickupStation,
+    to: dropoffStation,
+  } = getPkgDetail(pick);
 
   // Pick the closest train to package with enough capacity
   const train = packagesTrainCandidates()[pkg];
@@ -371,7 +383,7 @@ while (deliveries.length) {
   log`picked ${train} train for ${pkg} package`;
 
   // Set the active train current position
-  current = trainPositions[train];
+  current = trainStations[train];
 
   // Move train to package pickup station
   moveTrain(train, pickupStation);
@@ -381,12 +393,6 @@ while (deliveries.length) {
 
   // Move train to dropoff station
   moveTrain(train, dropoffStation);
-
-  // Remove package from train loads
-  unloadPackage(train, pkg);
-
-  // Remove package from our list
-  deliveries.pop();
 }
 
 logSeparator();
