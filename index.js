@@ -199,11 +199,11 @@ const getPkgDetail = (pkgName) => {
 };
 
 // Return train remaining capacity
-const getTrainRemainingCapacity = (trainName) =>
+const getTrainRemainingCapacity = (train) =>
   // Train full capacity
-  trainCapacities[trainName] -
+  trainCapacities[train] -
   // Train current total load
-  trainLoads[trainName].reduce((acc, cur) => acc + getPkgDetail(cur).weight, 0);
+  trainLoads[train].reduce((acc, cur) => acc + getPkgDetail(cur).weight, 0);
 
 // Returns a train with enough capacity
 const getTrainForWeight = (weight) =>
