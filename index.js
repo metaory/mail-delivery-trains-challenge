@@ -77,7 +77,7 @@ const { stations, edges, deliveries, trains } = input;
 
 // ··· FROZEN STRUCTURES ················································· //
 
-// Delivery statuses enums
+// Delivery status enums
 const STATUS = Object.freeze({
   AT_PICKUP: Symbol("AT_PICKUP"),
   IN_FLIGHT: Symbol("IN_FLIGHT"),
