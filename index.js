@@ -74,11 +74,17 @@ console.time("BENCH");
 // Destructure input detail
 const { stations, edges, deliveries, trains } = input;
 
-// Delivery statuses
+// Delivery statuses enums
 const STATUS = {
   AT_PICKUP: "AT_PICKUP",
   IN_FLIGHT: "IN_FLIGHT",
   DELIVERED: "DELIVERED",
+};
+
+// Direction enums
+const DIRECTIONS = {
+  "-1": "LEFT",
+  1: "RIGHT",
 };
 
 // Reduce input deliveries to produce delivery status
@@ -254,26 +260,26 @@ const getNext = (to) => {
 
   // Next is destination or There is no alteranative
   if (next === to || !alt) {
-    return next;
+    return [-1, next];
   }
 
   // The alteranative is the destination
   if (alt === to) {
-    return alt;
+    return [1, alt];
   }
 
   // Go right
   if (positions[to] > positions[current]) {
-    return alt;
+    return [1, alt];
   }
 
   // Go left
-  return next;
+  return [-1, next];
 };
 
 // Attempt to pickup packages along the way
-const pickupPackages = (train) => {
-  log`checking if ${train} can load up new package!`;
+const pickupPackages = (train, direction) => {
+  log`checking if ${train} moving ${DIRECTIONS[direction]} can load up new package!`;
 
   // Get train remaining capacity
   const remainingCapacity = getTrainRemainingCapacity(train);
@@ -307,7 +313,7 @@ function moveTrain(train, to) {
   log`move ${train} from ${current} to ${to}`;
 
   // Our local state
-  let next = getNext(to);
+  let [direction, next] = getNext(to);
 
   // NOTE: Debug: emergency circuit breaker
   let DEBUG_ESCAPE_HATCH_COUNTER = 0;
@@ -318,7 +324,7 @@ function moveTrain(train, to) {
     DEBUG_ESCAPE_HATCH_COUNTER++;
 
     // Attempt to load more packages on train
-    pickupPackages(train);
+    pickupPackages(train, direction);
 
     // Filter packages that their pickup is current
     const pickPackages = trainLoads[train].filter(
@@ -340,7 +346,8 @@ function moveTrain(train, to) {
     // Update state
     time += distances[`${current}-${next}`];
     current = next;
-    next = getNext(to);
+    direction = getNext(to)[0];
+    next = getNext(to)[1];
     trainStations[train] = current;
 
     // NOTE: Debug: emergency circuit breaker
