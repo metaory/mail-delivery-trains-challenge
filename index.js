@@ -75,6 +75,8 @@ console.time("BENCH");
 // Destructure input detail
 const { stations, edges, deliveries, trains } = input;
 
+// ··· FROZEN STRUCTURES ················································· //
+
 // Delivery statuses enums
 const STATUS = Object.freeze({
   AT_PICKUP: Symbol("AT_PICKUP"),
@@ -126,6 +128,8 @@ console.log(connections);
 console.log(distances);
 // { 'A-B': 30, 'B-A': 30, 'B-C': 10, 'C-B': 10, 'C-D': 40, 'D-C': 40 }
 
+// ··· STATE STRUCTURES ·················································· //
+
 // Reduce input deliveries to produce delivery status
 const deliveryStatus = deliveries.reduce((acc, cur) => {
   const [pkg] = cur.split(",");
@@ -156,6 +160,8 @@ console.log(trainCapacities);
 
 console.log(trainLoads);
 // { Q1: [] }
+
+// ··· METHODS ··························································· //
 
 // Load a package onto a train
 const loadPackage = (train, pkg) => {
@@ -253,6 +259,8 @@ logSeparator("_");
 
 // NOTE: Debug: There cant be more moves than possible edges
 const DEBUG_ESCAPE_HATCH_LIMIT = edges.length;
+
+// ··· DRIVERS ··························································· //
 
 // Our global state
 const moves = [];
@@ -420,6 +428,8 @@ while (deliveries.length) {
 }
 
 logSeparator();
+
+// ··· RESULTS ··························································· //
 
 // Output the result
 console.log(moves);
