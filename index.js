@@ -299,7 +299,7 @@ let time = 0;
 let current;
 
 // Return the immediate next possible move and direction
-const getNext = (to) => {
+function getNext(to) {
   // Possible next moves
   const [next, alt] = connections[current];
 
@@ -320,7 +320,7 @@ const getNext = (to) => {
 
   // Go left
   return [DIRECTIONS.LEFT, next];
-};
+}
 
 // NOTE: Debug: There cant be more moves than possible edges
 const DEBUG_ESCAPE_HATCH_LIMIT = edges.length;
