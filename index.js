@@ -209,6 +209,9 @@ const getTrainRemainingCapacity = (trainName) =>
 const getTrainForWeight = (weight) =>
   Object.keys(trainLoads).find((train) => trainCapacities[train] >= weight);
 
+// Returns positive diff between two numbers
+const getDiff = (a, b) => (a > b ? a - b : b - a);
+
 // Reduce to produce a map of closest train for each package
 const packagesTrainCandidates = () =>
   deliveries.reduce((acc, cur) => {
@@ -220,15 +223,10 @@ const packagesTrainCandidates = () =>
       (_acc, _cur) => {
         const trainPos = positions[trainStations[_cur]];
 
-        let diff;
+        // Get the distance between package and train
+        const diff = getDiff(pkgPos, trainPos);
 
-        if (pkgPos > trainPos) {
-          diff = pkgPos - trainPos;
-        } else {
-          diff = trainPos - pkgPos;
-        }
-
-        // This diff is better than previous diff
+        // This distance is shorter than previous
         if (diff < _acc.distance) {
           _acc.candidate = _cur;
           _acc.distance = diff;
