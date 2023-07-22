@@ -9,18 +9,19 @@
  *        train have enough capacity &
  *        package pickup is where train is &
  *        package status is still waiting to be picked up &
- *        package destination is in the same direction train is going & // TODO: <<
- *        package destination is before the current train destination // TODO: <<
+ *        package destination is in the same direction train is going & // TODO: <
+ *        package destination is before the current train destination // TODO: <
  * 5. At each station along the way it drop off packages
  *      remove the dropped packages from delivery list
  * */
+
 import C from "chalk";
 import { readFile, stat } from "node:fs/promises";
 
 console.clear();
 
 // /////////////////////////////////////////////////////////////////////// //
-// NOTE: Runner preprations ////////////////////////////////////////////// //
+// NOTE: Runner Preprations ////////////////////////////////////////////// //
 
 // Debug: Print a line separator filling terminal columns
 const logSeparator = (char = "#") =>
@@ -65,7 +66,7 @@ console.log(input);
 */
 
 // /////////////////////////////////////////////////////////////////////// //
-// NOTE: Begin solution ////////////////////////////////////////////////// //
+// NOTE: Begin Solution ////////////////////////////////////////////////// //
 
 logSeparator("=");
 
@@ -106,6 +107,7 @@ const { connections, distances } = Object.freeze(
 
       acc.connections[src] = acc.connections[src] ?? [];
       acc.connections[dst] = acc.connections[dst] ?? [];
+
       acc.connections[src].push(dst);
       acc.connections[dst].push(src);
 
@@ -138,8 +140,8 @@ console.log(deliveryStatus);
 const { trainStations, trainCapacities, trainLoads } = trains.reduce(
   (acc, cur) => {
     const [train, capacity, station] = cur.split(",");
-    acc.trainStations[train] = station;
     acc.trainCapacities[train] = +capacity;
+    acc.trainStations[train] = station;
     acc.trainLoads[train] = [];
     return acc;
   },
@@ -157,32 +159,29 @@ console.log(trainLoads);
 
 // Load a package onto a train
 const loadPackage = (train, pkg) => {
-  if (trainLoads[train].includes(pkg) === false) {
-    // Add package to train loads
-    trainLoads[train].push(pkg);
-
-    // Mark package delivery status to in-flight
-    deliveryStatus[pkg] = STATUS.IN_FLIGHT;
-  }
+  // Train is already holding this package
+  if (trainLoads[train].includes(pkg)) return;
+  // Add package to train loads
+  trainLoads[train].push(pkg);
+  // Mark package delivery status to in-flight
+  deliveryStatus[pkg] = STATUS.IN_FLIGHT;
 };
 
 // Unload a package from a train
 const unloadPackage = (train, pkg) => {
-  if (trainLoads[train].includes(pkg)) {
-    // Remove package from train loads
-    const trainPkgIndex = trainLoads[train].findIndex((x) => x === pkg);
-    trainLoads[train].splice(trainPkgIndex, 1);
-
-    // Mark package delivery status to delivered
-    deliveryStatus[pkg] = STATUS.DELIVERED;
-
-    // Remove package from delivery list
-    const pkgIndex = deliveries.findIndex((x) => {
-      const [name] = x.split(",");
-      return name === pkg;
-    });
-    deliveries.splice(pkgIndex, 1);
-  }
+  // Train is not holding this package
+  if (trainLoads[train].includes(pkg) === false) return;
+  // Remove package from train loads
+  const trainPkgIndex = trainLoads[train].findIndex((x) => x === pkg);
+  trainLoads[train].splice(trainPkgIndex, 1);
+  // Mark package delivery status to delivered
+  deliveryStatus[pkg] = STATUS.DELIVERED;
+  // Remove package from delivery list
+  const pkgIndex = deliveries.findIndex((x) => {
+    const [name] = x.split(",");
+    return name === pkg;
+  });
+  deliveries.splice(pkgIndex, 1);
 };
 
 // Return package detail
@@ -239,6 +238,7 @@ const packagesTrainCandidates = () =>
 
     const candidateCapacity = trainCapacities[candidate];
 
+    // Package weight is more than train capacity
     if (weight > candidateCapacity) {
       // Find train with enough capacity regardless of its distance
       acc[name] = getTrainForWeight(weight);
@@ -303,6 +303,8 @@ const pickupPackages = (train, direction) => {
     const isHere = from === current;
     // TODO: check for direction the current is going
     // const sameDirection = true
+    // TODO: check if package dropoff is before current destination
+    // const dropoffIsBeforeCurrentDestination = true
 
     return enoughCapacity && atPickup && isHere;
   });
