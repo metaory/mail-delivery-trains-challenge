@@ -289,7 +289,7 @@ const getNext = (to) => {
 
 // Attempt to pickup packages along the way
 const pickupPackages = (train, direction) => {
-  log`checking if ${train} moving ${DIRECTIONS[direction]} can load up new package!`;
+  log`if ${train} moving ${DIRECTIONS[direction]} can load up new package`;
 
   // Get train remaining capacity
   const remainingCapacity = getTrainRemainingCapacity(train);
@@ -415,9 +415,6 @@ while (deliveries.length) {
 
   // Move train to package pickup station
   moveTrain(train, pickupStation);
-
-  // Add package to train loads
-  loadPackage(train, pkg);
 
   // Move train to dropoff station
   moveTrain(train, dropoffStation);
