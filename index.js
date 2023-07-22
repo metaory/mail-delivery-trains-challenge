@@ -1,6 +1,6 @@
 /* This is an attempt at a more optimal solution;
  *
- * * While there are still deliveries to be made;
+ * ∞ While there are still deliveries to be made;
  * 1. It starts off by selecting the first delivery item
  * 2. Selects the closest train with enough capacity
  * 3. Move selected train towards the pickup station
