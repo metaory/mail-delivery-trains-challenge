@@ -453,5 +453,5 @@ log`Solution time is: ${solutionTime}`;
 
 // Solution benchmark
 console.timeEnd("BENCH");
-// BENCH for input-basic.json: ~4.00ms
-// BENCH for input-advance.json: ~6.00ms
+// for input-basic.json: ~4.00ms
+// for input-advance.json: ~6.00ms
