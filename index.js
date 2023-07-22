@@ -130,7 +130,7 @@ const deliveryStatus = deliveries.reduce((acc, cur) => {
 }, {});
 
 console.log(deliveryStatus);
-// { 'K1': 'AT_PICKUP' }
+// { K1: Symbol(AT_PICKUP) }
 
 // Reduce to produce train stations, capacities, loads
 const { trainStations, trainCapacities, trainLoads } = trains.reduce(
