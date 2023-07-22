@@ -75,17 +75,52 @@ console.time("BENCH");
 const { stations, edges, deliveries, trains } = input;
 
 // Delivery statuses enums
-const STATUS = {
-  AT_PICKUP: "AT_PICKUP",
-  IN_FLIGHT: "IN_FLIGHT",
-  DELIVERED: "DELIVERED",
-};
+const STATUS = Object.freeze({
+  AT_PICKUP: Symbol("AT_PICKUP"),
+  IN_FLIGHT: Symbol("IN_FLIGHT"),
+  DELIVERED: Symbol("DELIVERED"),
+});
 
 // Direction enums
-const DIRECTIONS = {
-  "-1": "LEFT",
-  1: "RIGHT",
-};
+const DIRECTIONS = Object.freeze({
+  LEFT: Symbol("LEFT"),
+  RIGHT: Symbol("RIGHT"),
+});
+
+// Reduce input stations to produce positions
+const positions = Object.freeze(
+  stations.reduce((acc, cur, i) => {
+    acc[cur] = i;
+    return acc;
+  }, {})
+);
+
+console.log(positions);
+// { A: 0, B: 1, C: 2, D: 3 }
+
+// Reduce input edges to produce connection-map and distances
+const { connections, distances } = Object.freeze(
+  edges.reduce(
+    (acc, cur) => {
+      const [, src, dst, distance] = cur.split(",");
+      acc.connections[src] = acc.connections[src] ?? [];
+      acc.connections[dst] = acc.connections[dst] ?? [];
+      acc.connections[src].push(dst);
+      acc.connections[dst].push(src);
+
+      acc.distances[`${src}-${dst}`] = +distance;
+      acc.distances[`${dst}-${src}`] = +distance;
+      return acc;
+    },
+    { connections: {}, distances: {} }
+  )
+);
+
+console.log(connections);
+//{ A: [ 'B' ], B: [ 'A', 'C' ], C: [ 'B', 'D' ], D: [ 'C' ] }
+
+console.log(distances);
+// { 'A-B': 30, 'B-A': 30, 'B-C': 10, 'C-B': 10, 'C-D': 40, 'D-C': 40 }
 
 // Reduce input deliveries to produce delivery status
 const deliveryStatus = deliveries.reduce((acc, cur) => {
@@ -96,16 +131,6 @@ const deliveryStatus = deliveries.reduce((acc, cur) => {
 
 console.log(deliveryStatus);
 // { 'K1': 'AT_PICKUP' }
-
-// Update a package delivery status
-const updateDeliveryStatus = (pkg, status) => {
-  // This should never happen
-  if (status in STATUS === false) {
-    log`provided ${status} doesnt exist on STATUS, exiting...`;
-    process.exit(1);
-  }
-  deliveryStatus[pkg] = status;
-};
 
 // Reduce to produce train stations, capacities, loads
 const { trainStations, trainCapacities, trainLoads } = trains.reduce(
@@ -128,37 +153,6 @@ console.log(trainCapacities);
 console.log(trainLoads);
 // { Q1: [] }
 
-// Reduce input stations to produce positions
-const positions = stations.reduce((acc, cur, i) => {
-  acc[cur] = i;
-  return acc;
-}, {});
-
-console.log(positions);
-// { A: 0, B: 1, C: 2, D: 3 }
-
-// Reduce input edges to produce connection-map and distances
-const { connections, distances } = edges.reduce(
-  (acc, cur) => {
-    const [, src, dst, distance] = cur.split(",");
-    acc.connections[src] = acc.connections[src] ?? [];
-    acc.connections[dst] = acc.connections[dst] ?? [];
-    acc.connections[src].push(dst);
-    acc.connections[dst].push(src);
-
-    acc.distances[`${src}-${dst}`] = +distance;
-    acc.distances[`${dst}-${src}`] = +distance;
-    return acc;
-  },
-  { connections: {}, distances: {} }
-);
-
-console.log(connections);
-//{ A: [ 'B' ], B: [ 'A', 'C' ], C: [ 'B', 'D' ], D: [ 'C' ] }
-
-console.log(distances);
-// { 'A-B': 30, 'B-A': 30, 'B-C': 10, 'C-B': 10, 'C-D': 40, 'D-C': 40 }
-
 // Load a package onto a train
 const loadPackage = (train, pkg) => {
   if (trainLoads[train].includes(pkg) === false) {
@@ -166,7 +160,7 @@ const loadPackage = (train, pkg) => {
     trainLoads[train].push(pkg);
 
     // Mark package delivery status to in-flight
-    updateDeliveryStatus(pkg, STATUS.IN_FLIGHT);
+    deliveryStatus[pkg] = STATUS.IN_FLIGHT;
   }
 };
 
@@ -178,7 +172,7 @@ const unloadPackage = (train, pkg) => {
     trainLoads[train].splice(trainPkgIndex, 1);
 
     // Mark package delivery status to delivered
-    updateDeliveryStatus(pkg, STATUS.DELIVERED);
+    deliveryStatus[pkg] = STATUS.DELIVERED;
 
     // Remove package from delivery list
     const pkgIndex = deliveries.findIndex((x) => {
@@ -270,26 +264,26 @@ const getNext = (to) => {
 
   // Next is destination or There is no alteranative
   if (next === to || !alt) {
-    return [-1, next];
+    return [DIRECTIONS.LEFT, next];
   }
 
   // The alteranative is the destination
   if (alt === to) {
-    return [1, alt];
+    return [DIRECTIONS.RIGHT, alt];
   }
 
   // Go right
   if (positions[to] > positions[current]) {
-    return [1, alt];
+    return [DIRECTIONS.RIGHT, alt];
   }
 
   // Go left
-  return [-1, next];
+  return [DIRECTIONS.LEFT, next];
 };
 
 // Attempt to pickup packages along the way
 const pickupPackages = (train, direction) => {
-  log`if ${train} moving ${DIRECTIONS[direction]} can load up new package`;
+  log`if ${train} moving ${direction.toString()} can load up new package`;
 
   // Get train remaining capacity
   const remainingCapacity = getTrainRemainingCapacity(train);
