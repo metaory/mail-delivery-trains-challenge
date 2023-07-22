@@ -386,7 +386,7 @@ while (deliveries.length) {
     process.exit(1);
   }
 
-  // Pick the first package
+  // Pick the first package; we have to start somewhere!
   const [pick] = deliveries;
   const {
     name: pkg,
