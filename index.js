@@ -206,8 +206,7 @@ const packagesTrainCandidates = () =>
     // Reduce trains to pick the closest to current package
     const { candidate } = Object.keys(trainStations).reduce(
       (_acc, _cur) => {
-        const trainStation = trainStations[_cur];
-        const trainPos = positions[trainStation];
+        const trainPos = positions[trainStations[_cur]];
 
         let diff;
 
