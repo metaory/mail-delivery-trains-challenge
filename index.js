@@ -92,10 +92,7 @@ const DIRECTIONS = Object.freeze({
 
 // Reduce input stations to produce positions
 const positions = Object.freeze(
-  stations.reduce((acc, cur, i) => {
-    acc[cur] = i;
-    return acc;
-  }, {})
+  stations.reduce((acc, cur, i) => ({ ...acc, [cur]: i }), {})
 );
 
 console.log(positions);
