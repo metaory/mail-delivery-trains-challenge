@@ -103,6 +103,7 @@ const { connections, distances } = Object.freeze(
   edges.reduce(
     (acc, cur) => {
       const [, src, dst, distance] = cur.split(",");
+
       acc.connections[src] = acc.connections[src] ?? [];
       acc.connections[dst] = acc.connections[dst] ?? [];
       acc.connections[src].push(dst);
@@ -110,6 +111,7 @@ const { connections, distances } = Object.freeze(
 
       acc.distances[`${src}-${dst}`] = +distance;
       acc.distances[`${dst}-${src}`] = +distance;
+
       return acc;
     },
     { connections: {}, distances: {} }
