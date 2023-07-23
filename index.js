@@ -5,12 +5,12 @@
  * 2. Selects the closest train with enough capacity
  * 3. Move selected train towards the pickup station and then destination
  * 4. At each station along the way it attempts to pick more packages
- *      if ?
- *        train have enough capacity &
- *        package pickup is where train is &
- *        package status is still waiting to be picked up &
- *        package destination is in the same direction train is going & // TODO: <
- *        package destination is before the current train destination // TODO: <
+ *    if ?
+ *      train have enough capacity &
+ *      package pickup is where train is &
+ *      package status is still waiting to be picked up &
+ *      package destination is in the same direction train is going & // TODO:
+ *      package destination is before the current train destination // TODO:
  * 5. At each station along the way it drop off packages
  *      remove the dropped packages from delivery list
  * */
@@ -57,12 +57,12 @@ const input = JSON.parse(await readFile(`./${path}`, { encoding: "utf8" }));
 
 console.log(input);
 /* input-edge.json
-{
-  stations: [ 'A', 'B', 'C', 'D', 'E' ],
-  edges: [ 'E1,A,B,30', 'E2,B,C,10', 'E3,C,D,40', 'E4,D,E,15' ],
-  deliveries: [ 'K1,1,A,D', 'K2,2,C,E', 'K3,4,B,D' ],
-  trains: [ 'Q1,4,C', 'Q2,5,B' ]
-}
+  {
+    stations: [ 'A', 'B', 'C', 'D', 'E' ],
+    edges: [ 'E1,A,B,30', 'E2,B,C,10', 'E3,C,D,40', 'E4,D,E,15' ],
+    deliveries: [ 'K1,1,A,D', 'K2,2,C,E', 'K3,4,B,D' ],
+    trains: [ 'Q1,4,C', 'Q2,5,B' ]
+  }
 */
 
 // /////////////////////////////////////////////////////////////////////// //
@@ -138,6 +138,9 @@ console.log(trainNames);
 
 // ··· STATE STRUCTURES ·················································· //
 
+// Outcome moves
+const moves = [];
+
 // Reduce input deliveries to produce delivery status
 const deliveryStatus = deliveries.reduce((acc, cur) => {
   const [pkg] = cur.split(",");
@@ -147,7 +150,7 @@ const deliveryStatus = deliveries.reduce((acc, cur) => {
 console.log(deliveryStatus);
 // { K1: Symbol(AT_PICKUP), K2: Symbol(AT_PICKUP), K3: Symbol(AT_PICKUP) }
 
-// Reduce to produce train stations, capacities, loads
+// Reduce input trains to produce train stations, capacities, loads
 const { trainStations, trainCapacities, trainLoads } = trains.reduce(
   (acc, cur) => {
     const [train, capacity, station] = cur.split(",");
@@ -169,7 +172,7 @@ console.log(trainLoads);
 // { Q1: [], Q2: [] }
 
 // List of logged picked up packages
-// this is to avoid logging the same package multiple times in output moves
+// this is to avoid logging the same package multiple times in outcome moves
 const logged = [];
 
 // Train timeline
@@ -274,26 +277,35 @@ const packagesTrainCandidates = () =>
   }, {});
 
 // Attempt to pickup packages along the way
-const pickupPackages = (train, direction, destination) => {
-  log`if train ${train} moving ${direction.toString()} to ${destination} can load up new package`;
+const pickupPackages = (train, dir, destination) => {
+  log`if train ${train} moving ${dir.toString()} to ${destination} can load up new package`;
 
   // Get train remaining capacity
   const remainingCapacity = getTrainRemainingCapacity(train);
 
+  // PERF: Consider current train direction
+  // const trainCurrentPos = positions[trainStations[train]];
+  // const trainDestinationPos = positions[destination];
+
   // Select a package candidate for train
   const packageCandidate = deliveries.find((x) => {
     const { name, weight, from } = getPkgDetail(x);
+
+    // PERF: Consider current train direction
+    // const packageDestinationPos = positions[to];
 
     // Does it have enough remaining capacity?
     const enoughCapacity = remainingCapacity >= weight;
     // Is it still at pickup?
     const atPickup = deliveryStatus[name] === STATUS.AT_PICKUP;
     // Is package pickup location is where we are?
-    const isHere = from === current;
-    // TODO: check for direction the current is going
-    // const sameDirection = true
-    // TODO: check if package drop off is before current destination
-    // const dropoffIsBeforeCurrentDestination = true
+    const isHere = from === trainStations[train];
+
+    // PERF: Consider current train direction
+    // Is package destination on the same direction train is going?
+    // const sameDirection = dir === DIRECTIONS.RIGHT ? packageDestinationPos > trainCurrentPos : packageDestinationPos < trainCurrentPos ;
+    // check if package drop off is before current destination
+    // const dropoffIsBeforeCurrentDestination = dir === DIRECTIONS.RIGHT ? packageDestinationPos < trainDestinationPos : packageDestinationPos  > trainDestinationPos;
 
     return enoughCapacity && atPickup && isHere;
   });
@@ -306,20 +318,10 @@ const pickupPackages = (train, direction, destination) => {
   }
 };
 
-logSeparator("_");
-
-// ··· DRIVERS ··························································· //
-
-// debugger;
-
-// Our global state
-const moves = [];
-let current;
-
 // Return the immediate next possible move and direction
-function getNext(to) {
+function getNext(train, to) {
   // Possible next moves
-  const [next, alt] = connections[current];
+  const [next, alt] = connections[trainStations[train]];
 
   // Next is destination or There is no alternative
   if (next === to || !alt) {
@@ -332,7 +334,7 @@ function getNext(to) {
   }
 
   // Go right
-  if (positions[to] > positions[current]) {
+  if (positions[to] > positions[trainStations[train]]) {
     return [DIRECTIONS.RIGHT, alt];
   }
 
@@ -340,15 +342,21 @@ function getNext(to) {
   return [DIRECTIONS.LEFT, next];
 }
 
-// NOTE: Debug: There cant be more moves than possible edges
-const DEBUG_ESCAPE_HATCH_LIMIT = edges.length;
+// ··· DRIVERS ··························································· //
+
+logSeparator("_");
+
+// debugger; // 
+
+// Arbitrary limit to avoid infinite loops in case of a bug 
+const DEBUG_ESCAPE_HATCH_LIMIT = 20;
 
 // Move the train towards a destination ( ? -> F )
 function moveTrain(train, to) {
-  log`move ${train} from ${current} to ${to}`;
+  log`move ${train} from ${trainStations[train]} to ${to}`;
 
   // Our local state
-  let [direction, next] = getNext(to);
+  let [direction, next] = getNext(train, to);
 
   // NOTE: Debug: emergency circuit breaker
   let DEBUG_ESCAPE_HATCH_COUNTER = 0;
@@ -357,7 +365,7 @@ function moveTrain(train, to) {
   pickupPackages(train, direction, to);
 
   // Move until we've reached destinations
-  while (current !== to) {
+  while (trainStations[train] !== to) {
     // NOTE: Debug: Increment circuit breaker counter
     DEBUG_ESCAPE_HATCH_COUNTER++;
 
@@ -366,7 +374,9 @@ function moveTrain(train, to) {
 
     // Filter packages that their pickup is current
     const pickPackages = trainLoads[train].filter(
-      (x) => getPkgDetail(x).from === current && logged.includes(x) === false
+      (x) =>
+        getPkgDetail(x).from === trainStations[train] &&
+        logged.includes(x) === false
     );
 
     // Add to logged packages
@@ -383,9 +393,9 @@ function moveTrain(train, to) {
     // Append the output
     moves.push(
       [
-        `W=${timeline[train]}`, // Current time elapsed
-        `T=${train}`, // Train
-        `N1=${current}`, // Start node
+        `W=${timeline[train]}`, // Time elapsed for train
+        `T=${train}`, // Train name
+        `N1=${trainStations[train]}`, // Start node (current train location)
         `P1=[${pickPackages}]`, // Pick-up packages
         `N2=${next}`, // End node
         `P2=[${dropPackages}]`, // Drop-off packages
@@ -394,17 +404,15 @@ function moveTrain(train, to) {
     );
 
     // Update state
-    timeline[train] += distances[`${current}-${next}`];
-    current = next;
-    direction = getNext(to)[0];
-    next = getNext(to)[1];
-    trainStations[train] = current;
+    timeline[train] += distances[`${trainStations[train]}-${next}`];
+    trainStations[train] = next;
+    direction = getNext(train, to)[0];
+    next = getNext(train, to)[1];
 
     // NOTE: Debug: emergency circuit breaker
     // XXX: This should never happen
     if (DEBUG_ESCAPE_HATCH_COUNTER > DEBUG_ESCAPE_HATCH_LIMIT) {
-      console.error(C.red("MOVE_TRAIN LOOP BREAK"));
-      console.info(C.cyan("There cant be more moves than possible edges"));
+      console.error(C.red("MOVE_TRAIN INFINITE LOOP BREAK"));
       console.info("incomplete moves:", moves);
       console.error(
         DEBUG_ESCAPE_HATCH_COUNTER,
@@ -423,16 +431,13 @@ let DEBUG_ESCAPE_HATCH_COUNTER = 0;
 
 // While there are still deliveries to be made
 while (deliveries.length) {
-  logSeparator(".");
-
   log`still got ${deliveries.length} deliveries to do`;
 
   // NOTE: Debug: emergency circuit breaker
   DEBUG_ESCAPE_HATCH_COUNTER++;
   // XXX: This should never happen
   if (DEBUG_ESCAPE_HATCH_COUNTER > DEBUG_ESCAPE_HATCH_LIMIT) {
-    console.info(C.red("DELIVERY LOOP BREAK"));
-    console.info(C.cyan("There cant be more moves than possible edges"));
+    console.info(C.red("DELIVERY INFINITE LOOP BREAK"));
     console.info("incomplete moves:", moves);
     console.error(
       DEBUG_ESCAPE_HATCH_COUNTER,
@@ -461,9 +466,6 @@ while (deliveries.length) {
 
   log`picked ${train} train for ${pkg} package`;
 
-  // Set the active train current position
-  current = trainStations[train];
-
   // Check if the picked package is at pickup
   // the picked package might already be in-flight on another train
   if (deliveryStatus[pkg] === STATUS.AT_PICKUP) {
@@ -479,7 +481,7 @@ logSeparator();
 
 // ··· RESULTS ··························································· //
 
-// Output the result
+// Output the outcome moves
 console.log(moves);
 /* input-edge.json
   [
@@ -510,4 +512,5 @@ log`Solution time is: ${solutionTime}`;
 // Solution benchmark
 console.timeEnd("BENCH");
 // for input-basic.json: ~4.00ms
+// for input-edge.json: ~6.00ms
 // for input-advance.json: ~6.00ms
