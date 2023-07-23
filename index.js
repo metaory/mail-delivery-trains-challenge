@@ -303,7 +303,7 @@ const pickupPackages = (train, dir, destination) => {
     // PERF: Consider current train direction
     // Is package destination on the same direction train is going?
     // const sameDirection = dir === DIRECTIONS.RIGHT ? packageDestinationPos > trainCurrentPos : packageDestinationPos < trainCurrentPos ;
-    // check if package drop off is before current destination
+    // Is package drop off before current destination
     // const dropoffIsBeforeCurrentDestination = dir === DIRECTIONS.RIGHT ? packageDestinationPos < trainDestinationPos : packageDestinationPos  > trainDestinationPos;
 
     return enoughCapacity && atPickup && isHere;
