@@ -140,41 +140,49 @@ _We like the best solution possible, but correctness is more important than opti
 ---
 
 ```javascript
-// input
+// input-edge.json
 {
-  "stations": ["A", "B", "C", "D"],
-  "edges": ["E1,A,B,30", "E2,B,C,10", "E3,C,D,40"],
-  "deliveries": ["K1,5,A,C"],
-  "trains": ["Q1,6,B"]
+  stations: [ 'A', 'B', 'C', 'D', 'E' ],
+  edges: [ 'E1,A,B,30', 'E2,B,C,10', 'E3,C,D,40', 'E4,D,E,15' ],
+  deliveries: [ 'K1,1,A,D', 'K2,2,C,E', 'K3,4,B,D' ],
+  trains: [ 'Q1,4,C', 'Q2,5,B' ]
 }
 
 // positions
-{ A: 0, B: 1, C: 2, D: 3 }
+{ A: 0, B: 1, C: 2, D: 3, E: 4 }
 
 // connections
-{ A: [ 'B' ], B: [ 'A', 'C' ], C: [ 'B', 'D' ], D: [ 'C' ] }
+{ A: [ 'B' ], B: [ 'A', 'C' ], C: [ 'B', 'D' ], D: [ 'C', 'E' ], E: [ 'D' ] }
 
 // distances
-{ 'A-B': 30, 'B-A': 30, 'B-C': 10, 'C-B': 10, 'C-D': 40, 'D-C': 40 }
+{ 'A-B': 30, 'B-A': 30, 'B-C': 10, 'C-B': 10, 'C-D': 40, 'D-C': 40, 'D-E': 15, 'E-D': 15 }
 
 // delivery status
-{ K1: Symbol(AT_PICKUP), K2: Symbol(IN_FLIGHT) }
+{ K1: Symbol(AT_PICKUP), K2: Symbol(AT_PICKUP), K3: Symbol(AT_PICKUP) }
 
 // train stations
-{ Q1: 'B' }
+{ Q1: 'C', Q2: 'B' }
 
 // train capacities
-{ Q1: 6 }
+{ Q1: 4, Q2: 5 }
 
 // train loads
-{ Q1: [] }
+{ Q1: [], Q2: [] }
+
+// train timeline
+{ Q1: 0, Q2: 0 }
 
 // moves
+// *L is train load
 [
-  'W=0, T=Q1, N1=B, P1=[], N2=A, P2=[]',
-  'W=30, T=Q1, N1=A, P1=[K1], N2=B, P2=[]',
-  'W=60, T=Q1, N1=B, P1=[], N2=C, P2=[K1]'
+  'W=0, T=Q2, N1=B, P1=[K3], N2=A, P2=[], L=[K3]',
+  'W=30, T=Q2, N1=A, P1=[K1], N2=B, P2=[], L=[K3,K1]',
+  'W=60, T=Q2, N1=B, P1=[], N2=C, P2=[], L=[K3,K1]',
+  'W=70, T=Q2, N1=C, P1=[], N2=D, P2=[K3,K1], L=[]',
+  'W=0, T=Q1, N1=C, P1=[K2], N2=D, P2=[], L=[K2]',
+  'W=40, T=Q1, N1=D, P1=[], N2=E, P2=[K2], L=[]'
 ]
 
-Solution time is: 70
+// input-edge.json
+Solution time is: 110
 ```

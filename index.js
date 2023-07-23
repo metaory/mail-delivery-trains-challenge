@@ -56,13 +56,14 @@ catchFileNotFound(path);
 const input = JSON.parse(await readFile(`./${path}`, { encoding: "utf8" }));
 
 console.log(input);
-/* input-basic.json
-  {
-    "stations": ["A", "B", "C", "D"],
-    "edges": ["E1,A,B,30", "E2,B,C,10", "E3,C,D,40"],
-    "deliveries": ["K1,5,A,C"],
-    "trains": ["Q1,6,B"]
-  }
+/* input-edge.json
+{
+  stations: [ 'A', 'B', 'C', 'D', 'E' ],
+  edges: [ 'E1,A,B,30', 'E2,B,C,10', 'E3,C,D,40', 'E4,D,E,15' ],
+  deliveries: [ 'K1,1,A,D', 'K2,2,C,E', 'K3,4,B,D' ],
+  rains: [ 'Q1,4,C' ],
+  trains: [ 'Q1,4,C', 'Q2,5,B' ]
+}
 */
 
 // /////////////////////////////////////////////////////////////////////// //
@@ -96,7 +97,7 @@ const positions = Object.freeze(
 );
 
 console.log(positions);
-// { A: 0, B: 1, C: 2, D: 3 }
+// { A: 0, B: 1, C: 2, D: 3, E: 4 }
 
 // Reduce input edges to produce connection-map and distances
 const { connections, distances } = Object.freeze(
@@ -120,10 +121,10 @@ const { connections, distances } = Object.freeze(
 );
 
 console.log(connections);
-//{ A: [ 'B' ], B: [ 'A', 'C' ], C: [ 'B', 'D' ], D: [ 'C' ] }
+//{ A: ['B'], B: ['A', 'C'], C: ['B', 'D'], D: ['C', 'E'], E: ['D'] }
 
 console.log(distances);
-// { 'A-B': 30, 'B-A': 30, 'B-C': 10, 'C-B': 10, 'C-D': 40, 'D-C': 40 }
+// { 'A-B': 30, 'B-A': 30, 'B-C': 10, 'C-B': 10, 'C-D': 40, 'D-C': 40, 'D-E': 15, 'E-D': 15 }
 
 // Reduce input trains to produce an array of train names
 const trainNames = Object.freeze(
@@ -134,7 +135,7 @@ const trainNames = Object.freeze(
 );
 
 console.log(trainNames);
-// ['Q1']
+// ['Q1', 'Q2']
 
 // ··· STATE STRUCTURES ·················································· //
 
@@ -145,7 +146,7 @@ const deliveryStatus = deliveries.reduce((acc, cur) => {
 }, {});
 
 console.log(deliveryStatus);
-// { K1: Symbol(AT_PICKUP) }
+// { K1: Symbol(AT_PICKUP), K2: Symbol(AT_PICKUP), K3: Symbol(AT_PICKUP) }
 
 // Reduce to produce train stations, capacities, loads
 const { trainStations, trainCapacities, trainLoads } = trains.reduce(
@@ -160,13 +161,24 @@ const { trainStations, trainCapacities, trainLoads } = trains.reduce(
 );
 
 console.log(trainStations);
-// { Q1: 'B' }
+// { Q1: 'C', Q2: 'B' }
 
 console.log(trainCapacities);
-// { Q1: 6 }
+// { Q1: 4, Q2: 5 }
 
 console.log(trainLoads);
-// { Q1: [] }
+// { Q1: [], Q2: [] }
+
+// List of logged picked up packages
+// this is to avoid logging the same package multiple times in output moves
+const logged = [];
+
+// Train timeline
+// NOTE: each train have its own timeline, (trains can move at the same time)
+const timeline = trainNames.reduce((acc, cur) => ({ ...acc, [cur]: 0 }), {});
+
+console.log(timeline);
+// { Q1: 0, Q2: 0 }
 
 // ··· METHODS ··························································· //
 
@@ -237,7 +249,7 @@ const packagesTrainCandidates = () =>
         const diff = getDiff(pkgPos, trainPos);
 
         // This distance is shorter than previous
-        if (diff < _acc.distance) {
+        if (diff <= _acc.distance) {
           _acc.candidate = _cur;
           _acc.distance = diff;
         }
@@ -263,12 +275,11 @@ const packagesTrainCandidates = () =>
   }, {});
 
 // Attempt to pickup packages along the way
-const pickupPackages = (train, direction) => {
-  log`if ${train} moving ${direction.toString()} can load up new package`;
+const pickupPackages = (train, direction, destination) => {
+  log`if train ${train} moving ${direction.toString()} to ${destination} can load up new package`;
 
   // Get train remaining capacity
   const remainingCapacity = getTrainRemainingCapacity(train);
-  log`train ${train} currently have ${remainingCapacity} capacity`;
 
   // Select a package candidate for train
   const packageCandidate = deliveries.find((x) => {
@@ -291,7 +302,7 @@ const pickupPackages = (train, direction) => {
   // We found a package candidate
   if (packageCandidate) {
     const [name] = packageCandidate.split(",");
-    log`found possible package candidate: ${name}`;
+    log`found possible package candidate: ${name} for ${train}`;
     loadPackage(train, name);
   }
 };
@@ -300,9 +311,10 @@ logSeparator("_");
 
 // ··· DRIVERS ··························································· //
 
+// debugger;
+
 // Our global state
 const moves = [];
-let time = 0;
 let current;
 
 // Return the immediate next possible move and direction
@@ -342,18 +354,24 @@ function moveTrain(train, to) {
   // NOTE: Debug: emergency circuit breaker
   let DEBUG_ESCAPE_HATCH_COUNTER = 0;
 
+  // Check if train can pickup package before moving
+  pickupPackages(train, direction, to);
+
   // Move until we've reached destinations
   while (current !== to) {
     // NOTE: Debug: Increment circuit breaker counter
     DEBUG_ESCAPE_HATCH_COUNTER++;
 
     // Attempt to load more packages on train
-    pickupPackages(train, direction);
+    pickupPackages(train, direction, to);
 
     // Filter packages that their pickup is current
     const pickPackages = trainLoads[train].filter(
-      (x) => getPkgDetail(x).from === current
+      (x) => getPkgDetail(x).from === current && logged.includes(x) === false
     );
+
+    // Add to picked package
+    pickPackages.forEach((x) => logged.push(x));
 
     // Filter packages that their drop off is next
     const dropPackages = trainLoads[train].filter(
@@ -366,27 +384,34 @@ function moveTrain(train, to) {
     // Append the output
     moves.push(
       [
-        `W=${time}`,
-        `T=${train}`,
-        `N1=${current}`,
-        `P1=[${pickPackages}]`,
-        `N2=${next}`,
-        `P2=[${dropPackages}]`,
+        `W=${timeline[train]}`, // Current time elapsed
+        `T=${train}`, // Train
+        `N1=${current}`, // Start node
+        `P1=[${pickPackages}]`, // Pick-up packages
+        `N2=${next}`, // End node
+        `P2=[${dropPackages}]`, // Drop-off packages
+        `L=[${trainLoads[train]}]`, // Train current load
       ].join(", ")
     );
 
     // Update state
-    time += distances[`${current}-${next}`];
+    timeline[train] += distances[`${current}-${next}`];
     current = next;
     direction = getNext(to)[0];
     next = getNext(to)[1];
     trainStations[train] = current;
 
     // NOTE: Debug: emergency circuit breaker
-    // This should never happen
+    // XXX: This should never happen
     if (DEBUG_ESCAPE_HATCH_COUNTER > DEBUG_ESCAPE_HATCH_LIMIT) {
+      console.error(C.red("MOVE_TRAIN LOOP BREAK"));
       console.info(C.cyan("There cant be more moves than possible edges"));
-      console.error(C.red.bold("REACHED ESCAPE HATCH LIMIT!"), "exiting...");
+      console.info("incomplete moves:", moves);
+      console.error(
+        DEBUG_ESCAPE_HATCH_COUNTER,
+        C.red.bold("REACHED ESCAPE HATCH LIMIT!"),
+        "exiting..."
+      );
       process.exit(1);
     }
 
@@ -405,10 +430,16 @@ while (deliveries.length) {
 
   // NOTE: Debug: emergency circuit breaker
   DEBUG_ESCAPE_HATCH_COUNTER++;
-  // This should never happen
+  // XXX: This should never happen
   if (DEBUG_ESCAPE_HATCH_COUNTER > DEBUG_ESCAPE_HATCH_LIMIT) {
+    console.info(C.red("DELIVERY LOOP BREAK"));
     console.info(C.cyan("There cant be more moves than possible edges"));
-    console.error(C.red.bold("REACHED ESCAPE HATCH LIMIT!"), "exiting...");
+    console.info("incomplete moves:", moves);
+    console.error(
+      DEBUG_ESCAPE_HATCH_COUNTER,
+      C.red.bold("REACHED ESCAPE HATCH LIMIT!"),
+      "exiting..."
+    );
     process.exit(1);
   }
 
@@ -423,7 +454,7 @@ while (deliveries.length) {
   // Pick the closest train to package with enough capacity
   const train = packagesTrainCandidates()[pkg];
 
-  // This should never happen
+  // XXX: This should never happen
   if (!train) {
     console.error(C.red(`There is no train for package ${pkg}`), "exiting...");
     process.exit(1);
@@ -434,8 +465,12 @@ while (deliveries.length) {
   // Set the active train current position
   current = trainStations[train];
 
-  // Move train to package pickup station
-  moveTrain(train, pickupStation);
+  // Check if the picked package is at pickup
+  // the picked package might already be in-flight on another train
+  if (deliveryStatus[pkg] === STATUS.AT_PICKUP) {
+    // Move train to package pickup station
+    moveTrain(train, pickupStation);
+  }
 
   // Move train to drop off station
   moveTrain(train, dropoffStation);
@@ -447,29 +482,32 @@ logSeparator();
 
 // Output the result
 console.log(moves);
-/*
+/* input-edge.json
   [
-    'W=0, T=Q1, N1=B, P1=[], N2=A, P2=[]',
-    'W=30, T=Q1, N1=A, P1=[K1], N2=B, P2=[]',
-    'W=60, T=Q1, N1=B, P1=[], N2=C, P2=[K1]'
+    'W=0, T=Q2, N1=B, P1=[K3], N2=A, P2=[], L=[K3]',
+    'W=30, T=Q2, N1=A, P1=[K1], N2=B, P2=[], L=[K3,K1]',
+    'W=60, T=Q2, N1=B, P1=[], N2=C, P2=[], L=[K3,K1]',
+    'W=70, T=Q2, N1=C, P1=[], N2=D, P2=[K3,K1], L=[]',
+    'W=0, T=Q1, N1=C, P1=[K2], N2=D, P2=[], L=[K2]',
+    'W=40, T=Q1, N1=D, P1=[], N2=E, P2=[K2], L=[]'
   ]
 */
 
-// Return the entire journey time taken
-function getSolutionTime() {
-  const finalMove = [...moves].pop();
-  const [W, , N1, , N2] = finalMove.split(",");
-  const [, time] = W.split("=");
-  const [, n1] = N1.split("=");
-  const [, n2] = N2.split("=");
-  return Number(time) + distances[`${n1}-${n2}`];
-}
+// Return the entire journey time taken from timeline
+// when we have multiple trains, we have multiple timelines
+// the highest of which is our total solution time
+const getSolutionTime = () =>
+  Object.keys(timeline).reduce((acc, cur) => {
+    if (timeline[cur] > acc) return timeline[cur];
+    return acc;
+  }, 0);
 
 const solutionTime = getSolutionTime();
 
 log`Solution time is: ${solutionTime}`;
 // for input-basic.json: 70
-// for input-advance.json: 250
+// for input-edge.json: 110
+// for input-advance.json: 140
 
 // Solution benchmark
 console.timeEnd("BENCH");

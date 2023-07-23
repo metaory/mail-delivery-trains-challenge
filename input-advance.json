@@ -3,7 +3,7 @@
 
   "edges": ["E1,A,B,30", "E2,B,C,10", "E3,C,D,40", "E4,D,E,20"],
 
-  "deliveries": ["K1,5,A,C", "K2,1,B,E", "K3,2,D,A"],
+  "deliveries": ["K1,2,A,E", "K2,1,B,D", "K3,7,E,B"],
 
-  "trains": ["Q1,6,B", "Q2,4,A", "Q3,7,C"]
+  "trains": ["Q1,4,B", "Q2,6,A", "Q3,7,B"]
 }
