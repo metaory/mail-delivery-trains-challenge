@@ -370,7 +370,7 @@ function moveTrain(train, to) {
       (x) => getPkgDetail(x).from === current && logged.includes(x) === false
     );
 
-    // Add to picked package
+    // Add to logged packages
     pickPackages.forEach((x) => logged.push(x));
 
     // Filter packages that their drop off is next
