@@ -495,14 +495,12 @@ console.log(moves);
 
 // Return the entire journey time taken from timeline
 // when we have multiple trains, we have multiple timelines
+// (trains can move at the same time)
 // the highest of which is our total solution time
-const getSolutionTime = () =>
-  Object.keys(timeline).reduce((acc, cur) => {
-    if (timeline[cur] > acc) return timeline[cur];
-    return acc;
-  }, 0);
-
-const solutionTime = getSolutionTime();
+const solutionTime = Object.keys(timeline).reduce(
+  (acc, cur) => (timeline[cur] > acc ? timeline[cur] : acc),
+  0
+);
 
 log`Solution time is: ${solutionTime}`;
 log`Time elapsed + the final leg of journey duration`;
