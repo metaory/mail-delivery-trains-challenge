@@ -244,6 +244,7 @@ const packagesTrainCandidates = () =>
     // Reduce trains to pick the closest to current package
     const { candidate } = trainNames.reduce(
       (_acc, _cur) => {
+        // Current train position
         const trainPos = positions[trainStations[_cur]];
 
         // Get the distance between package and train
