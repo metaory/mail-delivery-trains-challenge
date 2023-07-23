@@ -3,7 +3,7 @@
  * ∞ While there are still deliveries to be made;
  * 1. Starts off by selecting the first delivery item
  * 2. Selects the closest train with enough capacity
- * 3. Move selected train towards the pickup station
+ * 3. Move selected train towards the pickup station and then destination
  * 4. At each station along the way it attempts to pick more packages
  *      if ?
  *        train have enough capacity &
