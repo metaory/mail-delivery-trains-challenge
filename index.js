@@ -502,8 +502,8 @@ const solutionTime = Object.keys(timeline).reduce(
   0
 );
 
+log`(Time elapsed + the final leg of journey duration)`;
 log`Solution time is: ${solutionTime}`;
-log`Time elapsed + the final leg of journey duration`;
 // for input-basic.json: 70
 // for input-edge.json: 110
 // for input-advance.json: 140
