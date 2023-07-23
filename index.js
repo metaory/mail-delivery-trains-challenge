@@ -389,7 +389,7 @@ function moveTrain(train, to) {
         `P1=[${pickPackages}]`, // Pick-up packages
         `N2=${next}`, // End node
         `P2=[${dropPackages}]`, // Drop-off packages
-        `L=[${trainLoads[train]}]`, // Train current load
+        `L=[${trainLoads[train]}]`, // Train load
       ].join(", ")
     );
 
