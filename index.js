@@ -300,9 +300,9 @@ const pickupPackages = (train, direction, destination) => {
 
   // We found a package candidate
   if (packageCandidate) {
-    const [name] = packageCandidate.split(",");
-    log`found possible package candidate: ${name} for ${train}`;
-    loadPackage(train, name);
+    const [pkg] = packageCandidate.split(",");
+    log`found possible package candidate: ${pkg} for ${train}`;
+    loadPackage(train, pkg);
   }
 };
 
