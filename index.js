@@ -61,7 +61,6 @@ console.log(input);
   stations: [ 'A', 'B', 'C', 'D', 'E' ],
   edges: [ 'E1,A,B,30', 'E2,B,C,10', 'E3,C,D,40', 'E4,D,E,15' ],
   deliveries: [ 'K1,1,A,D', 'K2,2,C,E', 'K3,4,B,D' ],
-  rains: [ 'Q1,4,C' ],
   trains: [ 'Q1,4,C', 'Q2,5,B' ]
 }
 */
