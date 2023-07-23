@@ -263,9 +263,9 @@ const packagesTrainCandidates = () =>
     // Get train capacity for the candidate train
     const candidateCapacity = getTrainRemainingCapacity(candidate);
 
-    // Package weight is more than candidate train capacity
+    // Check if package weight is more than candidate train capacity
     if (weight > candidateCapacity) {
-      // Find train with enough capacity regardless of its distance
+      // Find a train with enough capacity regardless of its distance
       acc[name] = getTrainForWeight(weight);
     } else {
       // We can use our candidate train
@@ -275,7 +275,7 @@ const packagesTrainCandidates = () =>
     return acc;
   }, {});
 
-// Attempt to pickup packages along the way
+// Attempt to pickup more packages along the way
 const pickupPackages = (train, dir, destination) => {
   log`if train ${train} moving ${dir.toString()} to ${destination} can load up new package`;
 
