@@ -125,13 +125,23 @@ console.log(connections);
 console.log(distances);
 // { 'A-B': 30, 'B-A': 30, 'B-C': 10, 'C-B': 10, 'C-D': 40, 'D-C': 40 }
 
+// Reduce input trains to produce an array of train names
+const trainNames = Object.freeze(
+  trains.reduce((acc, cur) => {
+    const [name] = cur.split(",");
+    return [...acc, name];
+  }, [])
+);
+
+console.log(trainNames);
+// ['Q1']
+
 // ··· STATE STRUCTURES ·················································· //
 
 // Reduce input deliveries to produce delivery status
 const deliveryStatus = deliveries.reduce((acc, cur) => {
   const [pkg] = cur.split(",");
-  acc[pkg] = STATUS.AT_PICKUP;
-  return acc;
+  return { ...acc, [pkg]: STATUS.AT_PICKUP };
 }, {});
 
 console.log(deliveryStatus);
@@ -207,7 +217,7 @@ const getTrainRemainingCapacity = (train) =>
 
 // Return a train with enough capacity
 const getTrainForWeight = (weight) =>
-  Object.keys(trainLoads).find((train) => trainCapacities[train] >= weight);
+  trainNames.find((train) => trainCapacities[train] >= weight);
 
 // Return positive diff between two numbers
 const getDiff = (a, b) => (a > b ? a - b : b - a);
@@ -219,7 +229,7 @@ const packagesTrainCandidates = () =>
     const pkgPos = positions[from];
 
     // Reduce trains to pick the closest to current package
-    const { candidate } = Object.keys(trainStations).reduce(
+    const { candidate } = trainNames.reduce(
       (_acc, _cur) => {
         const trainPos = positions[trainStations[_cur]];
 
@@ -237,13 +247,15 @@ const packagesTrainCandidates = () =>
       { candidate: null, distance: edges.length }
     );
 
-    const candidateCapacity = trainCapacities[candidate];
+    // Get train capacity for the candidate train
+    const candidateCapacity = getTrainRemainingCapacity(candidate);
 
     // Package weight is more than candidate train capacity
     if (weight > candidateCapacity) {
       // Find train with enough capacity regardless of its distance
       acc[name] = getTrainForWeight(weight);
     } else {
+      // We can use our candidate train
       acc[name] = candidate;
     }
 
