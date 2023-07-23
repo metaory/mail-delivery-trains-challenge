@@ -22,13 +22,13 @@ console.clear();
 // /////////////////////////////////////////////////////////////////////// //
 // NOTE: Runner Preparations ///////////////////////////////////////////// //
 
-// Debug: Print a line separator filling terminal columns
+// DEBUG: Print a line separator filling terminal columns
 const logSeparator = (char = "#") =>
   console.log(
     Array.from({ length: process.stdout.columns }).fill(char).join("")
   );
 
-// Debug: Logger tag function
+// DEBUG: Logger tag function
 function log(tpl, ...vars) {
   for (const [i, key] of tpl.entries()) {
     if (!key) continue;
@@ -37,7 +37,7 @@ function log(tpl, ...vars) {
   process.stdout.write("\n");
 }
 
-// Debug: Catch file not found
+// DEBUG: Catch file not found
 const catchFileNotFound = (path) =>
   stat(path).catch(() => {
     console.error(C.yellow(path), C.red("doesn't exist"));
@@ -48,7 +48,7 @@ const catchFileNotFound = (path) =>
 const path = process.argv[2] ?? "input-basic.json";
 log`input path: ${path}`;
 
-// Debug: Check if provided input path exists
+// DEBUG: Check if provided input path exists
 catchFileNotFound(path);
 
 // Load up the input
@@ -357,7 +357,7 @@ function moveTrain(train, to) {
   // Our local state
   let [direction, next] = getNext(train, to);
 
-  // NOTE: Debug: emergency circuit breaker
+  // NOTE: DEBUG: emergency circuit breaker
   let DEBUG_ESCAPE_HATCH_COUNTER = 0;
 
   // Check if train can pickup package before moving
@@ -365,7 +365,7 @@ function moveTrain(train, to) {
 
   // Move until we've reached destinations
   while (trainStations[train] !== to) {
-    // NOTE: Debug: Increment circuit breaker counter
+    // NOTE: DEBUG: Increment circuit breaker counter
     DEBUG_ESCAPE_HATCH_COUNTER++;
 
     // Attempt to load more packages on train
@@ -408,7 +408,7 @@ function moveTrain(train, to) {
     direction = getNext(train, to)[0];
     next = getNext(train, to)[1];
 
-    // NOTE: Debug: emergency circuit breaker
+    // NOTE: DEBUG: emergency circuit breaker
     // XXX: This should never happen
     if (DEBUG_ESCAPE_HATCH_COUNTER > DEBUG_ESCAPE_HATCH_LIMIT) {
       console.error(C.red("MOVE_TRAIN INFINITE LOOP BREAK"));
@@ -425,14 +425,14 @@ function moveTrain(train, to) {
   }
 }
 
-// NOTE: Debug: emergency circuit breaker
+// NOTE: DEBUG: emergency circuit breaker
 let DEBUG_ESCAPE_HATCH_COUNTER = 0;
 
 // While there are still deliveries to be made
 while (deliveries.length) {
   log`still got ${deliveries.length} deliveries to do`;
 
-  // NOTE: Debug: emergency circuit breaker
+  // NOTE: DEBUG: emergency circuit breaker
   DEBUG_ESCAPE_HATCH_COUNTER++;
   // XXX: This should never happen
   if (DEBUG_ESCAPE_HATCH_COUNTER > DEBUG_ESCAPE_HATCH_LIMIT) {
