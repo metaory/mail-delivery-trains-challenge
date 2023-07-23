@@ -19,7 +19,9 @@ npm install
 npm start
 # or
 npm start input-basic.json
+npm start input-edge.json
 npm start input-advance.json
+npm start test-file-name.json
 ```
 
 ---
