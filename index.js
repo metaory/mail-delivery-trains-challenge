@@ -21,7 +21,7 @@ import { readFile, stat } from "node:fs/promises";
 console.clear();
 
 // /////////////////////////////////////////////////////////////////////// //
-// NOTE: Runner Preprations ////////////////////////////////////////////// //
+// NOTE: Runner Preparations ///////////////////////////////////////////// //
 
 // Debug: Print a line separator filling terminal columns
 const logSeparator = (char = "#") =>
@@ -41,7 +41,7 @@ function log(tpl, ...vars) {
 // Debug: Catch file not found
 const catchFileNotFound = (path) =>
   stat(path).catch(() => {
-    console.error(C.yellow(path), C.red("doesnt exist"));
+    console.error(C.yellow(path), C.red("doesn't exist"));
     process.exit(1);
   });
 
@@ -282,7 +282,7 @@ const pickupPackages = (train, direction) => {
     const isHere = from === current;
     // TODO: check for direction the current is going
     // const sameDirection = true
-    // TODO: check if package dropoff is before current destination
+    // TODO: check if package drop off is before current destination
     // const dropoffIsBeforeCurrentDestination = true
 
     return enoughCapacity && atPickup && isHere;
@@ -310,12 +310,12 @@ function getNext(to) {
   // Possible next moves
   const [next, alt] = connections[current];
 
-  // Next is destination or There is no alteranative
+  // Next is destination or There is no alternative
   if (next === to || !alt) {
     return [DIRECTIONS.LEFT, next];
   }
 
-  // The alteranative is the destination
+  // The alternative is the destination
   if (alt === to) {
     return [DIRECTIONS.RIGHT, alt];
   }
@@ -355,7 +355,7 @@ function moveTrain(train, to) {
       (x) => getPkgDetail(x).from === current
     );
 
-    // Filter packages that their dropoff is next
+    // Filter packages that their drop off is next
     const dropPackages = trainLoads[train].filter(
       (x) => getPkgDetail(x).to === next
     );
@@ -437,7 +437,7 @@ while (deliveries.length) {
   // Move train to package pickup station
   moveTrain(train, pickupStation);
 
-  // Move train to dropoff station
+  // Move train to drop off station
   moveTrain(train, dropoffStation);
 }
 
