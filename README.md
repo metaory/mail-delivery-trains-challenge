@@ -184,5 +184,7 @@ _We like the best solution possible, but correctness is more important than opti
 ]
 
 // input-edge.json
+// After adding the final leg of journey duration
+// The highest is Q2; 70 + 40(C-D is 40)
 Solution time is: 110
 ```
