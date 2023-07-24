@@ -4,13 +4,13 @@
  * 1. Starts off by selecting the first delivery item
  * 2. Selects the closest train with enough capacity
  * 3. Move selected train towards the pickup station and then destination
- * 4. At each station along the way it attempts to pick more packages if ?
+ * 4. At each station along the way attempt to pick more packages if ?
  *    - train have enough capacity &
  *    - package pickup is where train is &
  *    - package status is still waiting to be picked up &
- *    - package destination is in the same direction train is going & // TODO:
- *    - package destination is before the current train destination // TODO:
- * 5. At each station along the way it drop off packages
+ *    - package destination is the same direction train is going & // TODO:
+ *    - package destination is before the train destination // TODO:
+ * 5. At each station along the way attempt to drop off packages
  *      remove the dropped packages from delivery list
  * */
 
@@ -84,12 +84,12 @@ const STATUS = Object.freeze({
 });
 
 // Direction enums
-const DIRECTIONS = Object.freeze({
+const DIRECTION = Object.freeze({
   LEFT: Symbol("LEFT"),
   RIGHT: Symbol("RIGHT"),
 });
 
-// Reduce input stations to produce positions
+// Reduce input stations to produce station positions
 const positions = Object.freeze(
   stations.reduce((acc, cur, i) => ({ ...acc, [cur]: i }), {})
 );
@@ -97,7 +97,7 @@ const positions = Object.freeze(
 console.log(positions);
 // { A: 0, B: 1, C: 2, D: 3, E: 4 }
 
-// Reduce input edges to produce connection-map and distances
+// Reduce input edges to produce connection maps and distances
 const { connections, distances } = Object.freeze(
   edges.reduce(
     (acc, cur) => {
@@ -140,7 +140,7 @@ console.log(trainNames);
 // Outcome moves
 const moves = [];
 
-// Reduce input deliveries to produce delivery status
+// Reduce input deliveries to produce delivery status map
 const deliveryStatus = deliveries.reduce((acc, cur) => {
   const [pkg] = cur.split(",");
   return { ...acc, [pkg]: STATUS.AT_PICKUP };
@@ -175,7 +175,7 @@ console.log(trainLoads);
 const logged = [];
 
 // Train timeline
-// NOTE: each train have its own timeline, (trains can move at the same time)
+// NOTE: each train has its own timeline, (trains can move at the same time)
 const timeline = trainNames.reduce((acc, cur) => ({ ...acc, [cur]: 0 }), {});
 
 console.log(timeline);
@@ -244,10 +244,10 @@ const packagesTrainCandidates = () =>
     // Reduce trains to pick the closest to current package
     const { candidate } = trainNames.reduce(
       (_acc, _cur) => {
-        // Current train position
+        // Train current position
         const trainPos = positions[trainStations[_cur]];
 
-        // Get the distance between package and train
+        // Distance between package and train
         const diff = getDiff(pkgPos, trainPos);
 
         // This distance is shorter than previous
@@ -276,11 +276,14 @@ const packagesTrainCandidates = () =>
     return acc;
   }, {});
 
+console.log(packagesTrainCandidates());
+// { K1: 'Q2', K2: 'Q1', K3: 'Q2' }
+
 // Attempt to pickup more packages along the way
 const pickupPackages = (train, dir, destination) => {
   log`if train ${train} moving ${dir.toString()} to ${destination} can load up new package`;
 
-  // Get train remaining capacity
+  // Train remaining capacity
   const remainingCapacity = getTrainRemainingCapacity(train);
 
   // PERF: Consider current train direction
@@ -298,19 +301,19 @@ const pickupPackages = (train, dir, destination) => {
     const enoughCapacity = remainingCapacity >= weight;
     // Is it still at pickup?
     const atPickup = deliveryStatus[name] === STATUS.AT_PICKUP;
-    // Is package pickup location is where we are?
+    // Is package pickup location where train is?
     const isHere = from === trainStations[train];
 
     // PERF: Consider current train direction
     // Is package destination on the same direction train is going?
-    // const sameDirection = dir === DIRECTIONS.RIGHT ? packageDestinationPos > trainCurrentPos : packageDestinationPos < trainCurrentPos ;
+    // const sameDirection = dir === DIRECTION.RIGHT ? packageDestinationPos > trainCurrentPos : packageDestinationPos < trainCurrentPos ;
     // Is package drop off before current destination
-    // const dropoffIsBeforeCurrentDestination = dir === DIRECTIONS.RIGHT ? packageDestinationPos < trainDestinationPos : packageDestinationPos  > trainDestinationPos;
+    // const dropoffIsBeforeCurrentDestination = dir === DIRECTION.RIGHT ? packageDestinationPos < trainDestinationPos : packageDestinationPos  > trainDestinationPos;
 
     return enoughCapacity && atPickup && isHere;
   });
 
-  // We found a package candidate
+  // We have a package candidate
   if (packageCandidate) {
     const [pkg] = packageCandidate.split(",");
     log`found possible package candidate: ${pkg} for ${train}`;
@@ -325,21 +328,21 @@ function getNext(train, to) {
 
   // Next is destination or There is no alternative
   if (next === to || !alt) {
-    return [DIRECTIONS.LEFT, next];
+    return [DIRECTION.LEFT, next];
   }
 
   // The alternative is the destination
   if (alt === to) {
-    return [DIRECTIONS.RIGHT, alt];
+    return [DIRECTION.RIGHT, alt];
   }
 
   // Go right
   if (positions[to] > positions[trainStations[train]]) {
-    return [DIRECTIONS.RIGHT, alt];
+    return [DIRECTION.RIGHT, alt];
   }
 
   // Go left
-  return [DIRECTIONS.LEFT, next];
+  return [DIRECTION.LEFT, next];
 }
 
 // ··· DRIVERS ··························································· //
@@ -361,7 +364,7 @@ function moveTrain(train, to) {
   // NOTE: DEBUG: emergency circuit breaker
   let DEBUG_ESCAPE_HATCH_COUNTER = 0;
 
-  // Check if train can pickup package before moving
+  // Attempt to pickup more package before moving
   pickupPackages(train, direction, to);
 
   // Move until we've reached destinations
@@ -369,10 +372,10 @@ function moveTrain(train, to) {
     // NOTE: DEBUG: Increment circuit breaker counter
     DEBUG_ESCAPE_HATCH_COUNTER++;
 
-    // Attempt to load more packages on train
+    // Attempt to pickup more package
     pickupPackages(train, direction, to);
 
-    // Filter packages that their pickup is current
+    // Filter packages that their pickup is here
     const pickPackages = trainLoads[train].filter(
       (x) =>
         getPkgDetail(x).from === trainStations[train] &&
@@ -387,7 +390,7 @@ function moveTrain(train, to) {
       (x) => getPkgDetail(x).to === next
     );
 
-    // Remove package from train loads and deliveries
+    // Unload packages from train loads and deliveries
     dropPackages.forEach((x) => unloadPackage(train, x));
 
     // Append the output
@@ -395,7 +398,7 @@ function moveTrain(train, to) {
       [
         `W=${timeline[train]}`, // Time elapsed for train
         `T=${train}`, // Train name
-        `N1=${trainStations[train]}`, // Start node (current train location)
+        `N1=${trainStations[train]}`, // Start node (train current location)
         `P1=[${pickPackages}]`, // Pick-up packages
         `N2=${next}`, // End node
         `P2=[${dropPackages}]`, // Drop-off packages
@@ -473,7 +476,7 @@ while (deliveries.length) {
     moveTrain(train, pickupStation);
   }
 
-  // Move train to drop off station
+  // Move train to package drop off station
   moveTrain(train, dropoffStation);
 }
 
@@ -494,7 +497,7 @@ console.log(moves);
   ]
 */
 
-// Return the entire journey time taken from timeline
+// Return the entire journey time elapsed; taken from timeline
 // when we have multiple trains, we have multiple timelines
 // (trains can move at the same time)
 // the highest of which is our total solution time
@@ -505,12 +508,10 @@ const solutionTime = Object.keys(timeline).reduce(
 
 log`(Time elapsed + the final leg of journey duration)`;
 log`Solution time is: ${solutionTime}`;
-// for input-basic.json: 70
-// for input-edge.json: 110
-// for input-advance.json: 140
+// for input-basic.json:   70   // 70  on old implementation (master)
+// for input-edge.json:    110  // 235 on old implementation (master)
+// for input-advance.json: 140  // 320 on old implementation (master)
 
 // Solution benchmark
 console.timeEnd("BENCH");
-// for input-basic.json: ~4.00ms
-// for input-edge.json: ~6.00ms
-// for input-advance.json: ~6.00ms
+// BENCH: ~4.00ms
