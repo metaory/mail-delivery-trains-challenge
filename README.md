@@ -141,6 +141,8 @@ _We like the best solution possible, but correctness is more important than opti
 
 ---
 
+##### Input
+
 ```javascript
 // input-edge.json
 {
@@ -149,7 +151,13 @@ _We like the best solution possible, but correctness is more important than opti
   deliveries: [ 'K1,1,A,D', 'K2,2,C,E', 'K3,4,B,D' ],
   trains: [ 'Q1,4,C', 'Q2,5,B' ]
 }
+```
 
+---
+
+##### Initial reduced structures
+
+```javascript
 // positions
 { A: 0, B: 1, C: 2, D: 3, E: 4 }
 
@@ -173,7 +181,13 @@ _We like the best solution possible, but correctness is more important than opti
 
 // train timeline
 { Q1: 0, Q2: 0 }
+```
 
+---
+
+##### Outcome
+
+```javascript
 // moves
 // *L is train load
 [
