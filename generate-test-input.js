@@ -6,7 +6,9 @@ import readline from "node:readline";
 import { writeFileSync } from "node:fs";
 import C from "chalk";
 
-console.clear();
+const { clear, info } = console;
+
+clear();
 
 const prompt = readline.createInterface({
   input: process.stdin,
@@ -20,28 +22,27 @@ const MAX_TRAINS = 4;
 const MAX_WEIGHT = 10;
 const MAX_CAPACITY = 10;
 
-console.log("MAX_STATIONS:", MAX_STATIONS);
-console.log("MAX_DISTANCE:", MAX_DISTANCE);
-console.log("MAX_DELIVERIES:", MAX_DELIVERIES);
-console.log("MAX_TRAINS:", MAX_TRAINS);
-console.log("MAX_WEIGHT:", MAX_WEIGHT);
-console.log("MAX_CAPACITY:", MAX_CAPACITY);
-console.log("-------------------------------");
+info("MAX_STATIONS:", MAX_STATIONS);
+info("MAX_DISTANCE:", MAX_DISTANCE);
+info("MAX_DELIVERIES:", MAX_DELIVERIES);
+info("MAX_TRAINS:", MAX_TRAINS);
+info("MAX_WEIGHT:", MAX_WEIGHT);
+info("MAX_CAPACITY:", MAX_CAPACITY);
+info("-------------------------------");
 
-const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 const rnd = (max = 10, min = 1) =>
   Math.floor(Math.random() * (max - min + 1) + min);
 
 function generate() {
-  const stations = Array.from({ length: rnd(MAX_STATIONS, 2) }).reduce(
-    (acc) => {
-      const name = alphabet[rnd(alphabet.length) - 1];
+  const stations = Array.from({ length: rnd(MAX_STATIONS, 2) })
+    .reduce((acc) => {
+      const name = ALPHABET[rnd(ALPHABET.length - 1)];
       if (acc.includes(name) === false) acc.push(name);
       return acc;
-    },
-    []
-  );
+    }, [])
+    .sort();
 
   if (stations.length < 2) return generate();
 
@@ -84,37 +85,35 @@ function generate() {
   };
 }
 
-let output = generate();
+function confirm(output) {
+  info(output, "\n");
 
-console.log(output, "\n");
-
-function confirm() {
   prompt.question(`generate again? ${C.red.bold("[Y/n]")} `, (raw) => {
     const answer = (raw || "y").toLowerCase();
 
-    if (answer === "y") {
-      output = generate();
-      console.log("\n", output, "\n");
-      return confirm();
-    }
+    if (answer === "y") return confirm(generate());
 
-    console.log(C.green("\nok, saving...\n"));
+    info(C.green("\nok, saving...\n"));
 
     prompt.question(C.yellow("enter filename: "), (name) => {
       const filename = `${name}.json`;
-      console.log(
+
+      info(
         C.yellow("storing the generated output in"),
         C.green.bold(`./${filename}`)
       );
+
       writeFileSync(filename, JSON.stringify(output, null, 2));
-      console.log(
+
+      info(
         C.yellow("\nyou can now run it with:"),
         C.cyan.bold(`npm start ${filename}`)
       );
-      console.log(C.green("\ndone."));
+      info(C.green("\ndone."));
+
       prompt.close();
     });
   });
 }
 
-confirm();
+confirm(generate());
