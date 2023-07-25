@@ -26,6 +26,18 @@ npm start test-file-name.json
 
 ---
 
+## Generate random test input
+
+To randomly generate new test input:
+
+```bash
+npm run generate
+```
+
+![generate test input](./gifcast_generate-test-input.gif)
+
+---
+
 ## Challenge
 
 _You have been asked to write a program to control a network of **autonomous mail delivery trains**_
