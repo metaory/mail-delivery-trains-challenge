@@ -34,7 +34,9 @@ To randomly generate new test input:
 npm run generate
 ```
 
-![generate test input](./gifcast_generate-test-input.gif)
+<p align="center">
+  <img src="./gifcast_generate-test-input.gif" width="600" />
+</p>
 
 ---
 
