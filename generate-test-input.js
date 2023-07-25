@@ -37,14 +37,8 @@ const rnd = (max = 10, min = 1) =>
 
 function generate() {
   const stations = Array.from({ length: rnd(MAX_STATIONS, 2) })
-    .reduce((acc) => {
-      const name = ALPHABET[rnd(ALPHABET.length - 1)];
-      if (acc.includes(name) === false) acc.push(name);
-      return acc;
-    }, [])
+    .reduce((acc, _, i) => [...acc, ALPHABET[i]], [])
     .sort();
-
-  if (stations.length < 2) return generate();
 
   const edges = stations.reduce((acc, cur, i, arr) => {
     if (i === arr.length - 1) return acc;
