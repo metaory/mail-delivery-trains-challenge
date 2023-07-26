@@ -31,9 +31,13 @@ npm start test-file-name.json
 Randomly generate new test inputs:
 
 ```bash
-npm run generate # interactively generate and run solution
+# interactively generate and run solution
+npm run generate
+
 # or
-npm run generate force # forcefully generate and run solution
+
+# forcefully generate and run solution
+npm run generate force
 ```
 
 <p align="center">
