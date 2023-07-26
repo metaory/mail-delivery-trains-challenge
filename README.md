@@ -34,8 +34,6 @@ Randomly generate new test inputs:
 # interactively generate and run solution
 npm run generate
 
-# or
-
 # forcefully generate and run solution
 npm run generate force
 ```
