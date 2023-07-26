@@ -291,7 +291,7 @@ console.log(packagesTrainCandidates());
 // Attempt to pickup more packages along the way
 const pickupPackages = (train, targetPkgName /* dir, destination */) => {
   // The package train is on the way to pickup
-  const targetPkg = getPkgDetail(targetPkgName);
+  const { weight: targetPkgWeight } = getPkgDetail(targetPkgName);
   // Train remaining capacity
   const remainingCapacity = getTrainRemainingCapacity(train); // - targetPkg.weight;
 
@@ -306,11 +306,11 @@ const pickupPackages = (train, targetPkgName /* dir, destination */) => {
     // PERF: Consider current train direction
     // const packageDestinationPos = positions[to];
 
-    // If train is on the way to pickup a package;
+    // If train is on the way to pickup a package: (targetPkg)
     // account for that package weight as well
 
     // Does it have enough remaining capacity?
-    const enoughCapacity = remainingCapacity - targetPkg.weight >= weight;
+    const enoughCapacity = remainingCapacity - targetPkgWeight >= weight;
     // Is it still at pickup?
     const atPickup = deliveryStatus[name] === STATUS.AT_PICKUP;
     // Is package pickup location where train is?
