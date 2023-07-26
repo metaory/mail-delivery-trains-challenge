@@ -28,10 +28,12 @@ npm start test-file-name.json
 
 ## Generate random test input
 
-To randomly generate new test input:
+Randomly generate new test inputs:
 
 ```bash
-npm run generate
+npm run generate # interactively generate and run solution
+# or
+npm run generate force # forcefully generate and run solution
 ```
 
 <p align="center">
