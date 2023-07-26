@@ -31,14 +31,19 @@ info("MAX_CAPACITY   :", MAX_CAPACITY);
 
 info("-------------------------------");
 
+// DEBUG: Message headers
+const ERR = C.black(" ") + C.bgRed.black.bold(" ERROR ");
+const DONE = C.black(" ") + C.bgGreen.black.bold(" DONE ");
+
 if (MAX_STATIONS > ALPHABET.length) {
   console.error(
+    ERR,
     C.cyan("MAX_STATIONS"),
     `(${C.yellow.bold(MAX_STATIONS)})`,
     C.red("cant be higher than ALPHABET length"),
     `(${C.cyan.bold(ALPHABET.length)})`
   );
-  process.exit();
+  process.exit(1);
 }
 
 const rnd = (max = 10, min = 1, multiplier = 1) =>
@@ -104,25 +109,21 @@ function generate(multiplier) {
 const promptConfirm = (question, def) =>
   new Promise((resolve) =>
     prompt.question(
-      `${question} ${C.red.bold(def ? "[Y/n]" : "[y/N]")} `,
+      `${C.yellow.bold(question)} ${C.red.bold(def ? "[Y/n]" : "[y/N]")} `,
       (raw) => resolve((raw || (def ? "y" : "n")).toLowerCase() === "y")
     )
   );
 
 const promptValue = (question, def, suffix = "") =>
   new Promise((resolve) =>
-    prompt.question(C.yellow(question), (raw) =>
+    prompt.question(C.yellow.bold(question), (raw) =>
       resolve((raw || def).toLowerCase() + suffix)
     )
   );
 
 const write = (path, data) => {
   writeFileSync(path, JSON.stringify(data, null, 2));
-  info(
-    "\n",
-    C.yellow("stored the generated input data in"),
-    C.green.bold(path)
-  );
+  info("\n", C.blue("stored the generated input data in"), C.green.bold(path));
   process.argv[2] = path;
 };
 
@@ -135,9 +136,9 @@ async function menu(multiplier) {
 
   if (again) return menu(multiplier);
 
-  info("\n", C.green("ok, saving..."), "\n");
+  info("\n", C.italic.green("ok, saving..."), "\n");
 
-  info(C.cyan("default is:"), C.red.bold("tmp"), "\n");
+  info(C.italic.cyan(" default filename is"), C.red.bold("tmp"), "\n");
 
   const filename = await promptValue("enter filename: ", "tmp", ".json");
 
@@ -145,33 +146,35 @@ async function menu(multiplier) {
 
   info(
     "\n",
-    C.yellow("you can run solution with:"),
-    C.cyan.bold(`npm start assets/${filename}`, "\n")
+    C.cyan("you can run solution with"),
+    "\n",
+    C.bgGreen.black.bold(` npm start assets/${filename} `),
+    "\n"
   );
 
   const runIt = await promptConfirm("do you want to run it now?", false);
 
   if (runIt) await import("./index.js");
 
-  info("\n", C.green("done."));
+  info("\n", DONE);
 
   process.exit();
 }
 
 function validateMultiplier(multiplier) {
   if (isNaN(multiplier)) {
-    console.error(C.red("multiplier must be a Number"));
+    console.error(ERR, C.red("multiplier must be a"), C.yellow("Number"));
     return false;
   }
 
   if (multiplier < 1) {
-    console.error(C.red("multiplier must be greater than"), C.yellow(0));
+    console.error(ERR, C.red("multiplier must be greater than"), C.yellow(0));
     return false;
   }
 
   // Arbitrary limit
   if (multiplier >= 40) {
-    console.error(C.red("multiplier must be less than"), C.yellow(40));
+    console.error(ERR, C.red("multiplier must be less than"), C.yellow(40));
     return false;
   }
 
@@ -179,10 +182,9 @@ function validateMultiplier(multiplier) {
 }
 
 async function getMultiplier() {
-  info("\n", "multipler for [Edge distances, Train capacity, Package weight]");
-  info("eg; multiplier of", C.cyan(5));
-  info("you get:", C.green("5, 10, 15, 20, ..."));
-  info(C.cyan("default is"), C.red.bold("1"), "\n");
+  info(C.italic("\n multiplier for"), C.blue("[distance, capacity, weight]"));
+  info(" eg; multiplier of", C.cyan(5), "gives", C.green("5, 10, 15, 20, ..."));
+  info(C.italic.cyan(" default multiplier is"), C.red.bold(1), "\n");
 
   const multiplier = Number(await promptValue("enter a multiplier: ", "1"));
 
@@ -199,15 +201,17 @@ if (process.argv[2] === "force") {
 
   if (validateMultiplier(multiplier) === false) process.exit(1);
 
-  info("multiplier is set to", C.cyan.bold(multiplier));
+  info(C.green("multiplier is set to"), C.cyan.bold(multiplier));
 
   write("./assets/tmp.json", generate(multiplier));
 
-  info(C.cyan("running solution with test data..."));
+  info("\n", C.cyan("running solution with test data..."), "\n");
 
   process.argv[3] = process.argv[4] ?? 3; // Sleep delay
 
   await import("./index.js");
+
+  info("\n", DONE);
 
   process.exit();
 }

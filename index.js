@@ -18,6 +18,7 @@
 
 import C from "chalk";
 import { readFile, stat } from "node:fs/promises";
+const { info } = console;
 
 // /////////////////////////////////////////////////////////////////////// //
 // NOTE: Runner Preparations ///////////////////////////////////////////// //
@@ -25,24 +26,28 @@ import { readFile, stat } from "node:fs/promises";
 const sleep = (s = 1) => new Promise((r) => setTimeout(r, s * 1_000));
 
 // DEBUG: Print a line separator filling terminal columns
-const logSeparator = (char = "#") =>
-  console.log(
-    Array.from({ length: process.stdout.columns }).fill(char).join("")
-  );
+const logSeparator = (c = "#") =>
+  info(C.grey(Array.from({ length: process.stdout.columns }).fill(c).join("")));
 
 // DEBUG: Logger tag function
 function log(tpl, ...vars) {
   for (const [i, key] of tpl.entries()) {
     if (!key) continue;
-    process.stdout.write(key + C.red.bold(JSON.stringify(vars[i]) ?? ""));
+    const value = JSON.stringify(vars[i]) ?? "";
+    process.stdout.write(C.bold(key) + C.red.bold(value));
   }
   process.stdout.write("\n");
 }
 
+// DEBUG: Message headers
+const ERR = C.black(" ") + C.bgRed.black.bold(" ERROR ");
+const BUG = C.black(" ") + C.bgRed.black.bold(" BUG ");
+const OK = C.black(" ") + C.bgGreen.black.bold(" OK ");
+
 // DEBUG: Catch file not found
 const catchFileNotFound = (path) =>
   stat(path).catch(() => {
-    console.error(C.yellow(path), C.red("doesn't exist"));
+    console.error(ERR, C.yellow(path), C.red("FILE DOESN'T EXIST"));
     process.exit(1);
   });
 
@@ -54,7 +59,7 @@ log`input path: ${path}`;
 catchFileNotFound(path);
 
 // Load up the input
-const input = JSON.parse(await readFile(`${path}`, { encoding: "utf8" }));
+const input = JSON.parse(await readFile(path, { encoding: "utf8" }));
 
 console.log(input);
 /* input-edge.json
@@ -69,7 +74,7 @@ console.log(input);
 // Startup delay in seconds
 const sleepFor = Number(process.argv[3] ?? 3);
 
-log`starting solution in ${sleepFor} seconds...`;
+log`\nstarting solution in ${sleepFor} seconds...`;
 
 await sleep(sleepFor);
 
@@ -248,6 +253,7 @@ const getDiff = (a, b) => (a > b ? a - b : b - a);
 const packagesTrainCandidates = () =>
   deliveries.reduce((acc, cur) => {
     const { name, weight, from } = getPkgDetail(cur);
+    // Package pickup position
     const pkgPos = positions[from];
 
     // Reduce trains to pick the closest to current package
@@ -289,11 +295,11 @@ console.log(packagesTrainCandidates());
 // { K1: 'Q2', K2: 'Q1', K3: 'Q2' }
 
 // Attempt to pickup more packages along the way
-const pickupPackages = (train, targetPkgName /* dir, destination */) => {
+const pickupPackages = (train, targetPkgName) => {
   // The package train is on the way to pickup
   const { weight: targetPkgWeight } = getPkgDetail(targetPkgName);
   // Train remaining capacity
-  const remainingCapacity = getTrainRemainingCapacity(train); // - targetPkg.weight;
+  const remainingCapacity = getTrainRemainingCapacity(train);
 
   // PERF: Consider current train direction
   // const trainCurrentPos = positions[trainStations[train]];
@@ -422,7 +428,7 @@ function moveTrain(train, to, targetPkg) {
     // NOTE: DEBUG: emergency circuit breaker
     // XXX: This should never happen
     if (DEBUG_ESCAPE_HATCH_COUNTER > DEBUG_ESCAPE_HATCH_LIMIT) {
-      console.error(C.red("BUG: MOVE_TRAIN INFINITE LOOP BREAK"));
+      console.error(BUG, C.red("MOVE_TRAIN INFINITE LOOP BREAK"));
       process.exit(1);
     }
   }
@@ -439,7 +445,7 @@ while (deliveries.length) {
   DEBUG_ESCAPE_HATCH_COUNTER++;
   // XXX: This should never happen
   if (DEBUG_ESCAPE_HATCH_COUNTER > DEBUG_ESCAPE_HATCH_LIMIT) {
-    console.info(C.red("BUG: DELIVERY INFINITE LOOP BREAK"));
+    console.error(BUG, C.red("DELIVERY INFINITE LOOP BREAK"));
     process.exit(1);
   }
 
@@ -472,13 +478,13 @@ while (deliveries.length) {
     // The train that is holding the package
     const train = trainNames.reduce(
       (acc, cur) => (trainLoads[cur].includes(pkg) ? cur : acc),
-      ""
+      null
     );
     log`move ${train} to dropoff ${pkg} at ${dropoffStation}`;
 
     // DEBUG: this should never happen
     if (!train) {
-      console.info(C.red("BUG: no train is holding"), C.cyan(pkg));
+      console.error(BUG, C.red("NO TRAIN IS HOLDING"), C.cyan(pkg));
       process.exit(1);
     }
 
@@ -489,7 +495,7 @@ while (deliveries.length) {
 
 logSeparator();
 
-console.log(C.green.bold("All packages have been delivered."));
+info(OK, C.green.bold("All packages have been delivered."));
 
 // ··· RESULTS ··························································· //
 
@@ -510,12 +516,13 @@ console.log(moves);
 // when we have multiple trains, we have multiple timelines
 // (trains can move at the same time)
 // the highest of which is our total solution time
-const solutionTime = Object.keys(timeline).reduce(
+const solutionTime = trainNames.reduce(
   (acc, cur) => (timeline[cur] > acc ? timeline[cur] : acc),
   0
 );
 
-log`(Time elapsed + the final leg of journey duration)`;
+info(C.italic.grey("(Time elapsed + the final leg of journey duration)"));
+
 log`Solution time is: ${solutionTime}`;
 // for input-basic.json:   70   // 70  on old implementation
 // for input-edge.json:    110  // 235 on old implementation
