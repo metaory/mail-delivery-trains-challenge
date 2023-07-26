@@ -17,11 +17,11 @@ const prompt = readline.createInterface({
 
 const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-const MAX_STATIONS = 8;
-const MAX_DISTANCE = 60;
-const MAX_DELIVERIES = 8;
-const MAX_TRAINS = 6;
-const MAX_CAPACITY = 10;
+const MAX_STATIONS = 10;
+const MAX_DISTANCE = 100;
+const MAX_DELIVERIES = 10;
+const MAX_TRAINS = 5;
+const MAX_CAPACITY = 100;
 
 info("MAX_STATIONS   :", MAX_STATIONS);
 info("MAX_DISTANCE   :", MAX_DISTANCE);
@@ -30,8 +30,8 @@ info("MAX_TRAINS     :", MAX_TRAINS);
 info("MAX_CAPACITY   :", MAX_CAPACITY);
 info("-------------------------------");
 
-const rnd = (max = 10, min = 1) =>
-  Math.floor(Math.random() * (max - min + 1) + min);
+const rnd = (max = 10, min = 1, multiplier = 1) =>
+  Math.round((Math.random() * (max - min) + min) / multiplier) * multiplier;
 
 function generate() {
   const stations = Array.from({ length: rnd(MAX_STATIONS, 3) }).reduce(
@@ -44,7 +44,7 @@ function generate() {
     const name = `E${i + 1}`;
     const src = cur;
     const dst = arr[i + 1];
-    const dur = rnd(MAX_DISTANCE);
+    const dur = rnd(MAX_DISTANCE, 5, 5);
     return [...acc, [name, src, dst, dur].join(",")];
   }, []);
 
@@ -53,7 +53,7 @@ function generate() {
   }).reduce(
     (acc, _, i) => {
       const name = `Q${i + 1}`;
-      const capacity = rnd(MAX_CAPACITY, 2);
+      const capacity = rnd(MAX_CAPACITY, 5, 5);
       const station = stations[rnd(stations.length - 1, 0)];
 
       // To make sure there wont be any package with weight higher than our highest capacity train
@@ -68,7 +68,7 @@ function generate() {
   const deliveries = Array.from({ length: rnd(MAX_DELIVERIES, 2) }).reduce(
     (acc, _, i) => {
       const name = `K${i + 1}`;
-      const weight = rnd(highestCapacity);
+      const weight = rnd(highestCapacity, 5, 5);
       const src = stations[rnd(stations.length - 1, 0)];
       const srcIndex = stations.findIndex((x) => x === src);
       const remainingStations = [...stations];
