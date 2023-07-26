@@ -106,11 +106,12 @@ const promptValue = (question, def, suffix = "") =>
   );
 
 const write = (path, data) => {
+  writeFileSync(path, JSON.stringify(data, null, 2));
   info(
-    C.yellow("storing the generated input data in"),
+    "\n",
+    C.yellow("stored the generated input data in"),
     C.green.bold(`./${path}`)
   );
-  writeFileSync(path, JSON.stringify(data, null, 2));
   process.argv[2] = path;
 };
 
@@ -137,45 +138,59 @@ async function menu(multiplier) {
 
   const runIt = await promptConfirm("do you want to run it now?", false);
 
-  if (runIt) {
-    await import("./index.js");
-    process.exit();
-  }
+  if (runIt) await import("./index.js");
 
   info("\n", C.green("done."));
+
   process.exit();
 }
 
-// Argument mode
-if (process.argv[2] === "force") {
-  const multiplier = Number(process.argv[3] ?? 1);
-  info("multiplier is set to", C.cyan.bold(multiplier));
-  write("tmp.json", generate(multiplier));
-  info(C.cyan("running solution with test data..."));
-  process.argv[3] = process.argv[4] ?? 3; // Sleep delay
-  await import("./index.js");
-  process.exit();
+function validateMultiplier(multiplier) {
+  if (isNaN(multiplier)) {
+    console.error(C.red("multiplier must be a Number"));
+    return false;
+  }
+
+  if (multiplier < 1) {
+    console.error(C.red("multiplier must be greater than 0"));
+    return false;
+  }
+
+  return true;
 }
 
 async function getMultiplier() {
-  info("multipler for [Edge distances, Train capacity, Package weight]");
+  info("\n", "multipler for [Edge distances, Train capacity, Package weight]");
   info("eg; multiplier of", C.cyan(5));
   info("you get:", C.cyan("5, 10, 15, 20, ..."));
   info("default is", C.red.bold("1"), "\n");
 
   const multiplier = Number(await promptValue("enter a multiplier: ", "1"));
 
-  if (isNaN(multiplier)) {
-    console.error(C.red("multiplier must be a Number"));
-    process.exit(1);
-  }
-  if (multiplier < 1) {
-    console.error(C.red("multiplier must be greater than 0"));
-    process.exit(1);
-  }
+  if (validateMultiplier(multiplier) === false) return getMultiplier();
+
   info("multiplier is set to", C.cyan.bold(multiplier), "\n");
 
   return multiplier;
+}
+
+// Argument mode
+if (process.argv[2] === "force") {
+  const multiplier = Number(process.argv[3] ?? 1);
+
+  if (validateMultiplier(multiplier) === false) process.exit(1);
+
+  info("multiplier is set to", C.cyan.bold(multiplier));
+
+  write("tmp.json", generate(multiplier));
+
+  info(C.cyan("running solution with test data..."));
+
+  process.argv[3] = process.argv[4] ?? 3; // Sleep delay
+
+  await import("./index.js");
+
+  process.exit();
 }
 
 // Interactive mode
