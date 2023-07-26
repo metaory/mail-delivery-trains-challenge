@@ -34,7 +34,7 @@ const rnd = (max = 10, min = 1) =>
   Math.floor(Math.random() * (max - min + 1) + min);
 
 function generate() {
-  const stations = Array.from({ length: rnd(MAX_STATIONS, 2) }).reduce(
+  const stations = Array.from({ length: rnd(MAX_STATIONS, 3) }).reduce(
     (acc, _, i) => [...acc, ALPHABET[i]],
     []
   );
@@ -148,7 +148,6 @@ async function menu(output) {
 if (process.argv[2] === "force") {
   write("tmp.json", generate());
   info(C.cyan("running solution with test data..."));
-  process.argv[3] = 1;
   await import("./index.js");
   process.exit();
 }
