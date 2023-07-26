@@ -33,13 +33,21 @@ Randomly generate new test inputs:
 ```bash
 # interactively generate and run solution
 npm run generate
+```
 
+<p align="center">
+  <img src="./generate-test-input.gif" width="600" />
+</p>
+
+---
+
+```bash
 # forcefully generate and run solution
 npm run generate force
 ```
 
 <p align="center">
-  <img src="./generate-test-input.gif" width="600" />
+  <img src="./generate-test-input-force.gif" width="600" />
 </p>
 
 ---
