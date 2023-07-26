@@ -1,4 +1,5 @@
 node_modules
 *.pdf
 tmp.json
+err*.json
 
