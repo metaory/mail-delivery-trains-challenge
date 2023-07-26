@@ -28,6 +28,7 @@ info("MAX_DISTANCE   :", MAX_DISTANCE);
 info("MAX_DELIVERIES :", MAX_DELIVERIES);
 info("MAX_TRAINS     :", MAX_TRAINS);
 info("MAX_CAPACITY   :", MAX_CAPACITY);
+
 info("-------------------------------");
 
 if (MAX_STATIONS > ALPHABET.length) {
