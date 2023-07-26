@@ -108,12 +108,12 @@ const promptString = (question, def, suffix = "") =>
 const write = (path, data) =>
   writeFileSync(path, JSON.stringify(data, null, 2));
 
-async function confirm(output) {
+async function menu(output) {
   info(output, "\n");
 
   const again = await promptConfirm("generate again?", true);
 
-  if (again) return confirm(generate());
+  if (again) return menu(generate());
 
   info("\n", C.green("ok, saving..."), "\n");
 
@@ -153,4 +153,4 @@ if (process.argv[2] === "force") {
   process.exit();
 }
 
-confirm(generate());
+menu(generate());
