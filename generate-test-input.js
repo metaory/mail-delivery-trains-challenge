@@ -15,20 +15,20 @@ const prompt = readline.createInterface({
   output: process.stdout,
 });
 
+const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
 const MAX_STATIONS = 8;
 const MAX_DISTANCE = 60;
 const MAX_DELIVERIES = 6;
 const MAX_TRAINS = 6;
 const MAX_CAPACITY = 10;
 
-info("MAX_STATIONS:", MAX_STATIONS);
-info("MAX_DISTANCE:", MAX_DISTANCE);
-info("MAX_DELIVERIES:", MAX_DELIVERIES);
-info("MAX_TRAINS:", MAX_TRAINS);
-info("MAX_CAPACITY:", MAX_CAPACITY);
+info("MAX_STATIONS   :", MAX_STATIONS);
+info("MAX_DISTANCE   :", MAX_DISTANCE);
+info("MAX_DELIVERIES :", MAX_DELIVERIES);
+info("MAX_TRAINS     :", MAX_TRAINS);
+info("MAX_CAPACITY   :", MAX_CAPACITY);
 info("-------------------------------");
-
-const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 const rnd = (max = 10, min = 1) =>
   Math.floor(Math.random() * (max - min + 1) + min);
@@ -105,8 +105,14 @@ const promptString = (question, def, suffix = "") =>
     )
   );
 
-const write = (path, data) =>
+const write = (path, data) => {
+  info(
+    C.yellow("storing the generated input data in"),
+    C.green.bold(`./${path}`)
+  );
   writeFileSync(path, JSON.stringify(data, null, 2));
+  process.argv[2] = path;
+};
 
 async function menu(output) {
   info(output, "\n");
@@ -119,11 +125,6 @@ async function menu(output) {
 
   const filename = await promptString("enter filename: ", "tmp", ".json");
 
-  info(
-    C.yellow("storing the generated output in"),
-    C.green.bold(`./${filename}`)
-  );
-
   write(filename, output);
 
   info(
@@ -135,7 +136,6 @@ async function menu(output) {
   const runIt = await promptConfirm("do you want to run it now?", false);
 
   if (runIt) {
-    process.argv[2] = filename;
     await import("./index.js");
     process.exit();
   }
@@ -146,9 +146,7 @@ async function menu(output) {
 
 // Argument mode
 if (process.argv[2] === "force") {
-  info(C.yellow("generating test data..."));
   write("tmp.json", generate());
-  process.argv[2] = "tmp.json";
   info(C.cyan("running solution with test data..."));
   await import("./index.js");
   process.exit();
