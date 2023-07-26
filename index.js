@@ -256,7 +256,7 @@ const packagesTrainCandidates = () =>
     // Package pickup position
     const pkgPos = positions[from];
 
-    // Reduce trains to pick the closest to current package
+    // Reduce trains to pick the best train for the current package
     const { candidate } = trainNames.reduce(
       (_acc, _cur) => {
         // Train current position
@@ -265,30 +265,21 @@ const packagesTrainCandidates = () =>
         // Distance between package and train
         const diff = getDiff(pkgPos, trainPos);
 
-        // This distance is shorter than previous
-        if (diff <= _acc.distance) {
+        // Enough capacity for package weight
+        const enoughCapacity = getTrainRemainingCapacity(_cur) >= weight;
+
+        // This distance is shorter than previous and have enough capacity
+        if (diff <= _acc.distance && enoughCapacity) {
           _acc.candidate = _cur;
           _acc.distance = diff;
         }
 
         return _acc;
       },
-      { candidate: null, distance: edges.length }
+      { candidate: getTrainForWeight(weight), distance: edges.length }
     );
 
-    // Get train capacity for the candidate train
-    const candidateCapacity = getTrainRemainingCapacity(candidate);
-
-    // Check if package weight is more than candidate train capacity
-    if (weight > candidateCapacity) {
-      // Find a train with enough capacity regardless of its distance
-      acc[name] = getTrainForWeight(weight);
-    } else {
-      // We can use our candidate train
-      acc[name] = candidate;
-    }
-
-    return acc;
+    return { ...acc, [name]: candidate };
   }, {});
 
 console.log(packagesTrainCandidates());
