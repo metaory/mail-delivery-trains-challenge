@@ -100,7 +100,7 @@ const promptConfirm = (question, def) =>
 
 const promptString = (question, def, suffix = "") =>
   new Promise((resolve) =>
-    prompt.question(C.yellow(question), async (name) =>
+    prompt.question(C.yellow(question), (name) =>
       resolve(`${name || def}${suffix}`)
     )
   );
