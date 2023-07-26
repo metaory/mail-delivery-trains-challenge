@@ -17,16 +17,14 @@ const prompt = readline.createInterface({
 
 const MAX_STATIONS = 8;
 const MAX_DISTANCE = 60;
-const MAX_DELIVERIES = 8;
-const MAX_TRAINS = 4;
-const MAX_WEIGHT = 10;
+const MAX_DELIVERIES = 6;
+const MAX_TRAINS = 6;
 const MAX_CAPACITY = 10;
 
 info("MAX_STATIONS:", MAX_STATIONS);
 info("MAX_DISTANCE:", MAX_DISTANCE);
 info("MAX_DELIVERIES:", MAX_DELIVERIES);
 info("MAX_TRAINS:", MAX_TRAINS);
-info("MAX_WEIGHT:", MAX_WEIGHT);
 info("MAX_CAPACITY:", MAX_CAPACITY);
 info("-------------------------------");
 
@@ -36,9 +34,10 @@ const rnd = (max = 10, min = 1) =>
   Math.floor(Math.random() * (max - min + 1) + min);
 
 function generate() {
-  const stations = Array.from({ length: rnd(MAX_STATIONS, 2) })
-    .reduce((acc, _, i) => [...acc, ALPHABET[i]], [])
-    .sort();
+  const stations = Array.from({ length: rnd(MAX_STATIONS, 2) }).reduce(
+    (acc, _, i) => [...acc, ALPHABET[i]],
+    []
+  );
 
   const edges = stations.reduce((acc, cur, i, arr) => {
     if (i === arr.length - 1) return acc;
@@ -49,10 +48,27 @@ function generate() {
     return [...acc, [name, src, dst, dur].join(",")];
   }, []);
 
-  const deliveries = Array.from({ length: rnd(MAX_DELIVERIES) }).reduce(
+  const { trains, highestCapacity } = Array.from({
+    length: rnd(MAX_TRAINS, 2),
+  }).reduce(
+    (acc, _, i) => {
+      const name = `Q${i + 1}`;
+      const capacity = rnd(MAX_CAPACITY);
+      const station = stations[rnd(stations.length - 1, 0)];
+
+      // To make sure there wont be any package with weight higher than our highest capacity train
+      if (capacity > acc.highestCapacity) acc.highestCapacity = capacity;
+
+      acc.trains.push([name, capacity, station].join(","));
+      return acc;
+    },
+    { trains: [], highestCapacity: 0 }
+  );
+
+  const deliveries = Array.from({ length: rnd(MAX_DELIVERIES, 2) }).reduce(
     (acc, _, i) => {
       const name = `K${i + 1}`;
-      const weight = rnd(MAX_WEIGHT);
+      const weight = rnd(highestCapacity);
       const src = stations[rnd(stations.length - 1, 0)];
       const srcIndex = stations.findIndex((x) => x === src);
       const remainingStations = [...stations];
@@ -64,12 +80,7 @@ function generate() {
     []
   );
 
-  const trains = Array.from({ length: rnd(MAX_TRAINS) }).reduce((acc, _, i) => {
-    const name = `Q${i + 1}`;
-    const capacity = rnd(MAX_CAPACITY);
-    const station = stations[rnd(stations.length - 1, 0)];
-    return [...acc, [name, capacity, station].join(",")];
-  }, []);
+  if (deliveries.length < 2) return generate();
 
   return {
     stations,
@@ -79,35 +90,67 @@ function generate() {
   };
 }
 
-function confirm(output) {
+const promptConfirm = (question, def) =>
+  new Promise((resolve) =>
+    prompt.question(
+      `${question} ${C.red.bold(def ? "[Y/n]" : "[y/N]")} `,
+      (raw) => resolve((raw || (def ? "y" : "n")).toLowerCase() === "y")
+    )
+  );
+
+const promptString = (question, def, suffix = "") =>
+  new Promise((resolve) =>
+    prompt.question(C.yellow(question), async (name) =>
+      resolve(`${name || def}${suffix}`)
+    )
+  );
+
+const write = (path, data) =>
+  writeFileSync(path, JSON.stringify(data, null, 2));
+
+async function confirm(output) {
   info(output, "\n");
 
-  prompt.question(`generate again? ${C.red.bold("[Y/n]")} `, (raw) => {
-    const answer = (raw || "y").toLowerCase();
+  const again = await promptConfirm("generate again?", true);
 
-    if (answer === "y") return confirm(generate());
+  if (again) return confirm(generate());
 
-    info(C.green("\nok, saving...\n"));
+  info("\n", C.green("ok, saving..."), "\n");
 
-    prompt.question(C.yellow("enter filename: "), (name) => {
-      const filename = `${name}.json`;
+  const filename = await promptString("enter filename: ", "tmp", ".json");
 
-      info(
-        C.yellow("storing the generated output in"),
-        C.green.bold(`./${filename}`)
-      );
+  info(
+    C.yellow("storing the generated output in"),
+    C.green.bold(`./${filename}`)
+  );
 
-      writeFileSync(filename, JSON.stringify(output, null, 2));
+  write(filename, output);
 
-      info(
-        C.yellow("\nyou can now run it with:"),
-        C.cyan.bold(`npm start ${filename}`)
-      );
-      info(C.green("\ndone."));
+  info(
+    "\n",
+    C.yellow("you can run solution with:"),
+    C.cyan.bold(`npm start ${filename}`, "\n")
+  );
 
-      prompt.close();
-    });
-  });
+  const runIt = await promptConfirm("do you want to run it now?", false);
+
+  if (runIt) {
+    process.argv[2] = filename;
+    await import("./index.js");
+    process.exit();
+  }
+
+  info("\n", C.green("done."));
+  process.exit();
+}
+
+if (process.argv[2] === "force") {
+  info(C.yellow("generating test data..."));
+  write("tmp.json", generate());
+  process.argv[2] = "tmp.json";
+  info(C.cyan("running solution with test data..."));
+  await import("./index.js");
+  process.exit();
 }
 
 confirm(generate());
