@@ -136,6 +136,8 @@ async function menu(multiplier) {
 
   info("\n", C.green("ok, saving..."), "\n");
 
+  info(C.cyan("default is:"), C.red.bold("tmp"), "\n");
+
   const filename = await promptValue("enter filename: ", "tmp", ".json");
 
   write(filename, output);
@@ -166,6 +168,7 @@ function validateMultiplier(multiplier) {
     return false;
   }
 
+  // Arbitrary limit
   if (multiplier >= 40) {
     console.error(C.red("multiplier must be less than"), C.yellow(40));
     return false;
@@ -177,8 +180,8 @@ function validateMultiplier(multiplier) {
 async function getMultiplier() {
   info("\n", "multipler for [Edge distances, Train capacity, Package weight]");
   info("eg; multiplier of", C.cyan(5));
-  info("you get:", C.cyan("5, 10, 15, 20, ..."));
-  info(C.green("default is"), C.red.bold("1"), "\n");
+  info("you get:", C.green("5, 10, 15, 20, ..."));
+  info(C.cyan("default is"), C.red.bold("1"), "\n");
 
   const multiplier = Number(await promptValue("enter a multiplier: ", "1"));
 
