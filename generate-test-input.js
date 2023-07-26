@@ -144,6 +144,7 @@ async function menu(output) {
   process.exit();
 }
 
+// Argument mode
 if (process.argv[2] === "force") {
   info(C.yellow("generating test data..."));
   write("tmp.json", generate());
@@ -153,4 +154,5 @@ if (process.argv[2] === "force") {
   process.exit();
 }
 
+// Interactive mode
 menu(generate());
