@@ -47,8 +47,8 @@ npm run generate
 npm run generate force [multiplier] [delay]
 
 # [multiplier]
-# for [Edge distances, Train capacity, Package weight]
-# eg; with multiplier of 5 you get: 5, 10, 15, 20, ...
+# for [distances, capacity, weight]
+# eg; multiplier of 5 gives: 5, 10, 15, 20, ...
 # default is 1
 
 # [delay]
