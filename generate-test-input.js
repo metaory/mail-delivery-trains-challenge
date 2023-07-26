@@ -19,7 +19,7 @@ const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 const MAX_STATIONS = 8;
 const MAX_DISTANCE = 60;
-const MAX_DELIVERIES = 6;
+const MAX_DELIVERIES = 8;
 const MAX_TRAINS = 6;
 const MAX_CAPACITY = 10;
 
@@ -148,6 +148,7 @@ async function menu(output) {
 if (process.argv[2] === "force") {
   write("tmp.json", generate());
   info(C.cyan("running solution with test data..."));
+  process.argv[3] = 1;
   await import("./index.js");
   process.exit();
 }
