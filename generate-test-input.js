@@ -33,7 +33,7 @@ info("-------------------------------");
 const rnd = (max = 10, min = 1, multiplier = 1) =>
   Math.round((Math.random() * (max - min) + min) / multiplier) * multiplier;
 
-function generate() {
+function generate(multiplier) {
   const stations = Array.from({ length: rnd(MAX_STATIONS, 3) }).reduce(
     (acc, _, i) => [...acc, ALPHABET[i]],
     []
@@ -44,7 +44,7 @@ function generate() {
     const name = `E${i + 1}`;
     const src = cur;
     const dst = arr[i + 1];
-    const dur = rnd(MAX_DISTANCE, 5, 5);
+    const dur = rnd(MAX_DISTANCE, multiplier, multiplier);
     return [...acc, [name, src, dst, dur].join(",")];
   }, []);
 
@@ -53,7 +53,7 @@ function generate() {
   }).reduce(
     (acc, _, i) => {
       const name = `Q${i + 1}`;
-      const capacity = rnd(MAX_CAPACITY, 5, 5);
+      const capacity = rnd(MAX_CAPACITY, multiplier, multiplier);
       const station = stations[rnd(stations.length - 1, 0)];
 
       // To make sure there wont be any package with weight higher than our highest capacity train
@@ -68,7 +68,7 @@ function generate() {
   const deliveries = Array.from({ length: rnd(MAX_DELIVERIES, 2) }).reduce(
     (acc, _, i) => {
       const name = `K${i + 1}`;
-      const weight = rnd(highestCapacity, 5, 5);
+      const weight = rnd(highestCapacity, multiplier, multiplier);
       const src = stations[rnd(stations.length - 1, 0)];
       const srcIndex = stations.findIndex((x) => x === src);
       const remainingStations = [...stations];
@@ -80,7 +80,7 @@ function generate() {
     []
   );
 
-  if (deliveries.length < 2) return generate();
+  if (deliveries.length < 2) return generate(multiplier);
 
   return {
     stations,
@@ -98,7 +98,7 @@ const promptConfirm = (question, def) =>
     )
   );
 
-const promptString = (question, def, suffix = "") =>
+const promptValue = (question, def, suffix = "") =>
   new Promise((resolve) =>
     prompt.question(C.yellow(question), (raw) =>
       resolve((raw || def).toLowerCase() + suffix)
@@ -114,16 +114,16 @@ const write = (path, data) => {
   process.argv[2] = path;
 };
 
-async function menu(output) {
+async function menu(output, multiplier) {
   info(output, "\n");
 
   const again = await promptConfirm("generate again?", true);
 
-  if (again) return menu(generate());
+  if (again) return menu(generate(multiplier), multiplier);
 
   info("\n", C.green("ok, saving..."), "\n");
 
-  const filename = await promptString("enter filename: ", "tmp", ".json");
+  const filename = await promptValue("enter filename: ", "tmp", ".json");
 
   write(filename, output);
 
@@ -146,11 +146,35 @@ async function menu(output) {
 
 // Argument mode
 if (process.argv[2] === "force") {
-  write("tmp.json", generate());
+  const multiplier = Number(process.argv[3] ?? 1);
+  info("multiplier is", C.cyan.bold(multiplier));
+  write("tmp.json", generate(multiplier));
   info(C.cyan("running solution with test data..."));
+  process.argv[3] = process.argv[4] ?? 3; // Sleep delay
   await import("./index.js");
   process.exit();
 }
 
+async function getMultiplier() {
+  info("multipler for [Edge distances, Train capacity, Package weight]");
+  info("eg; multiplier of", C.cyan(5));
+  info("you get:", C.cyan("5, 10, 15, 20, ..."));
+  info("default is", C.red.bold("1"), "\n");
+
+  const multiplier = Number(await promptValue("enter a multiplier: ", "1"));
+
+  if (isNaN(multiplier)) {
+    console.error(C.red("multiplier must be a Number"));
+    process.exit(1);
+  }
+  if (multiplier < 1) {
+    console.error(C.red("multiplier must be greater than 0"));
+    process.exit(1);
+  }
+  info("multiplier is set to", C.cyan.bold(multiplier), "\n");
+  return multiplier;
+}
+
 // Interactive mode
-menu(generate());
+const multiplier = await getMultiplier();
+menu(generate(multiplier), multiplier);

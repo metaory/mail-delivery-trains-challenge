@@ -43,7 +43,16 @@ npm run generate
 
 ```bash
 # forcefully generate and run solution
-npm run generate force
+npm run generate force [multiplier] [delay]
+
+# [multiplier]
+# for [Edge distances, Train capacity, Package weight]
+# eg; with multiplier of 5 you get: 5, 10, 15, 20, ...
+# default is 1
+
+# [delay]
+# delay in seconds
+# default is 3
 ```
 
 <p align="center">
