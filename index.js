@@ -13,7 +13,7 @@
  *    - package destination is the same direction train is going & // TODO:
  *    - package destination is before the train destination // TODO:
  * 5. At each station along the way attempt to drop off packages
- *      remove the dropped packages from delivery list
+ *    - remove the dropped packages from delivery list
  * */
 
 import C from "chalk";
@@ -22,7 +22,7 @@ import { readFile, stat } from "node:fs/promises";
 // /////////////////////////////////////////////////////////////////////// //
 // NOTE: Runner Preparations ///////////////////////////////////////////// //
 
-const sleep = (s = 1) => new Promise((r) => setTimeout(r, s * 1000));
+const sleep = (s = 1) => new Promise((r) => setTimeout(r, s * 1_000));
 
 // DEBUG: Print a line separator filling terminal columns
 const logSeparator = (char = "#") =>
@@ -225,7 +225,7 @@ const getPkgDetail = (pkgName) => {
     const [name] = x.split(",");
     return x === pkgName || name === pkgName;
   });
-  if (!pkg) return {};
+  if (!pkg) return { weight: 0 };
   const [name, weight, from, to] = pkg.split(",");
   return { name, weight: +weight, from, to };
 };
@@ -308,11 +308,9 @@ const pickupPackages = (train, targetPkgName /* dir, destination */) => {
 
     // If train is on the way to pickup a package;
     // account for that package weight as well
-    const targetPkgWeight =
-      targetPkgName && name !== targetPkg.name ? targetPkg.weight : 0;
 
     // Does it have enough remaining capacity?
-    const enoughCapacity = remainingCapacity - targetPkgWeight >= weight;
+    const enoughCapacity = remainingCapacity - targetPkg.weight >= weight;
     // Is it still at pickup?
     const atPickup = deliveryStatus[name] === STATUS.AT_PICKUP;
     // Is package pickup location where train is?
