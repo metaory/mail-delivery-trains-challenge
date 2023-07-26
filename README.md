@@ -39,7 +39,7 @@ npm run generate force
 ```
 
 <p align="center">
-  <img src="./gifcast_generate-test-input.gif" width="600" />
+  <img src="./generate-test-input.gif" width="600" />
 </p>
 
 ---
