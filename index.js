@@ -473,7 +473,7 @@ while (deliveries.length) {
     );
     log`move ${train} to dropoff ${pkg} at ${dropoffStation}`;
 
-    // DEBUG: this should never happen
+    // DEBUG: This should never happen
     if (!train) {
       console.error(BUG, C.red("NO TRAIN IS HOLDING"), C.cyan(pkg));
       process.exit(1);
