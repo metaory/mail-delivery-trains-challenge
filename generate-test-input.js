@@ -114,12 +114,14 @@ const write = (path, data) => {
   process.argv[2] = path;
 };
 
-async function menu(output, multiplier) {
+async function menu(multiplier) {
+  const output = generate(multiplier);
+
   info(output, "\n");
 
   const again = await promptConfirm("generate again?", true);
 
-  if (again) return menu(generate(multiplier), multiplier);
+  if (again) return menu(multiplier);
 
   info("\n", C.green("ok, saving..."), "\n");
 
@@ -147,7 +149,7 @@ async function menu(output, multiplier) {
 // Argument mode
 if (process.argv[2] === "force") {
   const multiplier = Number(process.argv[3] ?? 1);
-  info("multiplier is", C.cyan.bold(multiplier));
+  info("multiplier is set to", C.cyan.bold(multiplier));
   write("tmp.json", generate(multiplier));
   info(C.cyan("running solution with test data..."));
   process.argv[3] = process.argv[4] ?? 3; // Sleep delay
@@ -172,9 +174,9 @@ async function getMultiplier() {
     process.exit(1);
   }
   info("multiplier is set to", C.cyan.bold(multiplier), "\n");
+
   return multiplier;
 }
 
 // Interactive mode
-const multiplier = await getMultiplier();
-menu(generate(multiplier), multiplier);
+menu(await getMultiplier());
