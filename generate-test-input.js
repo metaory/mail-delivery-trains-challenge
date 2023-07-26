@@ -53,7 +53,7 @@ function generate() {
   }).reduce(
     (acc, _, i) => {
       const name = `Q${i + 1}`;
-      const capacity = rnd(MAX_CAPACITY);
+      const capacity = rnd(MAX_CAPACITY, 2);
       const station = stations[rnd(stations.length - 1, 0)];
 
       // To make sure there wont be any package with weight higher than our highest capacity train
