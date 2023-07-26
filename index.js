@@ -47,14 +47,14 @@ const catchFileNotFound = (path) =>
   });
 
 // Input path
-const path = process.argv[2] ?? "input-basic.json";
+const path = process.argv[2] ?? "assets/input-basic.json";
 log`input path: ${path}`;
 
 // DEBUG: Check if provided input path exists
 catchFileNotFound(path);
 
 // Load up the input
-const input = JSON.parse(await readFile(`./${path}`, { encoding: "utf8" }));
+const input = JSON.parse(await readFile(`${path}`, { encoding: "utf8" }));
 
 console.log(input);
 /* input-edge.json

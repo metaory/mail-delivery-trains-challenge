@@ -121,7 +121,7 @@ const write = (path, data) => {
   info(
     "\n",
     C.yellow("stored the generated input data in"),
-    C.green.bold(`./${path}`)
+    C.green.bold(path)
   );
   process.argv[2] = path;
 };
@@ -141,12 +141,12 @@ async function menu(multiplier) {
 
   const filename = await promptValue("enter filename: ", "tmp", ".json");
 
-  write(filename, output);
+  write(`./assets/${filename}`, output);
 
   info(
     "\n",
     C.yellow("you can run solution with:"),
-    C.cyan.bold(`npm start ${filename}`, "\n")
+    C.cyan.bold(`npm start assets/${filename}`, "\n")
   );
 
   const runIt = await promptConfirm("do you want to run it now?", false);
@@ -201,7 +201,7 @@ if (process.argv[2] === "force") {
 
   info("multiplier is set to", C.cyan.bold(multiplier));
 
-  write("tmp.json", generate(multiplier));
+  write("./assets/tmp.json", generate(multiplier));
 
   info(C.cyan("running solution with test data..."));
 

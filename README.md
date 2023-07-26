@@ -18,10 +18,11 @@
 npm install
 npm start
 # or
-npm start input-basic.json
-npm start input-edge.json
-npm start input-advance.json
-npm start test-file-name.json
+npm start assets/input-basic.json
+npm start assets/input-edge.json
+npm start assets/input-advance.json
+
+npm start [JSON_TEST_FILE_PATH]
 ```
 
 ---
@@ -36,7 +37,7 @@ npm run generate
 ```
 
 <p align="center">
-  <img src="./generate-test-input.gif" width="600" />
+  <img src="./assets/generate-test-input.gif" width="600" />
 </p>
 
 ---
@@ -56,7 +57,7 @@ npm run generate force [multiplier] [delay]
 ```
 
 <p align="center">
-  <img src="./generate-test-input-force.gif" width="600" />
+  <img src="./assets/generate-test-input-force.gif" width="600" />
 </p>
 
 ---
