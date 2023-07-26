@@ -30,6 +30,16 @@ info("MAX_TRAINS     :", MAX_TRAINS);
 info("MAX_CAPACITY   :", MAX_CAPACITY);
 info("-------------------------------");
 
+if (MAX_STATIONS > ALPHABET.length) {
+  console.error(
+    C.cyan("MAX_STATIONS"),
+    `(${C.yellow.bold(MAX_STATIONS)})`,
+    C.red("cant be higher than ALPHABET length"),
+    `(${C.cyan.bold(ALPHABET.length)})`
+  );
+  process.exit();
+}
+
 const rnd = (max = 10, min = 1, multiplier = 1) =>
   Math.round((Math.random() * (max - min) + min) / multiplier) * multiplier;
 
@@ -152,7 +162,12 @@ function validateMultiplier(multiplier) {
   }
 
   if (multiplier < 1) {
-    console.error(C.red("multiplier must be greater than 0"));
+    console.error(C.red("multiplier must be greater than"), C.yellow(0));
+    return false;
+  }
+
+  if (multiplier >= 40) {
+    console.error(C.red("multiplier must be less than"), C.yellow(40));
     return false;
   }
 
@@ -163,13 +178,13 @@ async function getMultiplier() {
   info("\n", "multipler for [Edge distances, Train capacity, Package weight]");
   info("eg; multiplier of", C.cyan(5));
   info("you get:", C.cyan("5, 10, 15, 20, ..."));
-  info("default is", C.red.bold("1"), "\n");
+  info(C.green("default is"), C.red.bold("1"), "\n");
 
   const multiplier = Number(await promptValue("enter a multiplier: ", "1"));
 
   if (validateMultiplier(multiplier) === false) return getMultiplier();
 
-  info("multiplier is set to", C.cyan.bold(multiplier), "\n");
+  info(C.green("multiplier is set to"), C.cyan.bold(multiplier), "\n");
 
   return multiplier;
 }
