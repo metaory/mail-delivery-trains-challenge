@@ -31,11 +31,11 @@ const MIN_CAPACITY = 20;
 const MAX_MULTIPLIER = 40;
 
 info(" MIN-MAX STATIONS   :", MIN_STATIONS, "-", MAX_STATIONS);
-info(" MAX DISTANCE       :", MAX_DISTANCE);
+info(" MIN-MAX DISTANCE   :", 1, "-", MAX_DISTANCE);
 info(" MIN-MAX DELIVERIES :", MIN_DELIVERIES, "-", MAX_DELIVERIES);
 info(" MIN-MAX TRAINS     :", MIN_TRAINS, "-", MAX_TRAINS);
 info(" MIN-MAX CAPACITY   :", MIN_CAPACITY, "-", MAX_CAPACITY);
-info(" MAX MULTIPLIER     :", MAX_MULTIPLIER);
+info(" MIN-MAX MULTIPLIER :", 1, "-", MAX_MULTIPLIER);
 
 info("------------------------------");
 
