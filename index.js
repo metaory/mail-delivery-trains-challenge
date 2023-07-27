@@ -61,7 +61,7 @@ catchFileNotFound(path);
 // Load up the input
 const input = JSON.parse(await readFile(path, { encoding: "utf8" }));
 
-console.log(input);
+console.log(input, "\n");
 /* input-edge.json
   {
     stations: [ 'A', 'B', 'C', 'D', 'E' ],
@@ -74,7 +74,7 @@ console.log(input);
 // Startup delay in seconds
 const sleepFor = Number(process.argv[3] ?? 3);
 
-log`\nstarting solution in ${sleepFor} seconds...`;
+log`starting solution in ${sleepFor} seconds...`;
 
 await sleep(sleepFor);
 
@@ -442,6 +442,7 @@ while (deliveries.length) {
 
   // Pick the first package; we have to start somewhere!
   const [pick] = deliveries;
+
   const {
     name: pkg,
     from: pickupStation,
@@ -471,6 +472,7 @@ while (deliveries.length) {
       (acc, cur) => (trainLoads[cur].includes(pkg) ? cur : acc),
       null
     );
+
     log`move ${train} to dropoff ${pkg} at ${dropoffStation}`;
 
     // DEBUG: This should never happen

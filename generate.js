@@ -1,6 +1,6 @@
-/*
- * Randomely generate and store test input data
- * ***************************************** */
+/* ******************************************** *
+ * Randomely Generate and Store test input data *
+ * ******************************************** */
 
 import readline from "node:readline";
 import { writeFileSync } from "node:fs";
@@ -19,10 +19,10 @@ const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 const MAX_STATIONS = 10;
 const MAX_DISTANCE = 100;
-const MAX_DELIVERIES = 6;
-const MAX_TRAINS = 4;
+const MAX_DELIVERIES = 10;
+const MAX_TRAINS = 5;
 const MAX_CAPACITY = 100;
-const MIN_CAPACITY = 40;
+const MIN_CAPACITY = 20;
 
 info("MAX_STATIONS   :", MAX_STATIONS);
 info("MAX_DISTANCE   :", MAX_DISTANCE);
@@ -113,14 +113,14 @@ const promptConfirm = (question, def) =>
   new Promise((resolve) =>
     prompt.question(
       `${C.yellow.bold(question)} ${C.red.bold(def ? "[Y/n]" : "[y/N]")} `,
-      (raw) => resolve((raw || (def ? "y" : "n")).toLowerCase() === "y")
+      (raw) => resolve((raw.trim() || (def ? "y" : "n")).toLowerCase() === "y")
     )
   );
 
 const promptValue = (question, def, suffix = "") =>
   new Promise((resolve) =>
     prompt.question(C.yellow.bold(question), (raw) =>
-      resolve((raw || def).toLowerCase() + suffix)
+      resolve((raw.trim() || def).toLowerCase() + suffix)
     )
   );
 
@@ -189,7 +189,7 @@ async function getMultiplier() {
   info(" eg; multiplier of", C.cyan(5), "gives", C.green("5, 10, 15, 20, ..."));
   info(C.italic.cyan(" default multiplier is"), C.red.bold(1), "\n");
 
-  const multiplier = Number(await promptValue("enter a multiplier: ", "1"));
+  const multiplier = Number(await promptValue("enter multiplier: ", "1"));
 
   if (validateMultiplier(multiplier) === false) return getMultiplier();
 
