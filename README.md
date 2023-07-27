@@ -32,7 +32,7 @@ npm start [JSON_TEST_FILE_PATH]
 Randomly generate new test inputs:
 
 ```bash
-# interactively generate and run solution
+# interactive mode to generate and run the solution
 npm run generate
 ```
 
@@ -43,7 +43,7 @@ npm run generate
 ---
 
 ```bash
-# forcefully generate and run solution
+# non-interactive mode to generate and run the solution
 npm run generate force [multiplier] [delay]
 
 # [multiplier]

@@ -17,21 +17,28 @@ const prompt = readline.createInterface({
 
 const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
+// Configurations
 const MAX_STATIONS = 10;
+const MIN_STATIONS = 3;
 const MAX_DISTANCE = 100;
 const MAX_DELIVERIES = 10;
-const MAX_TRAINS = 5;
+const MIN_DELIVERIES = 2;
+const MAX_TRAINS = 8;
+const MIN_TRAINS = 4;
 const MAX_CAPACITY = 100;
 const MIN_CAPACITY = 20;
 
-info("MAX_STATIONS   :", MAX_STATIONS);
-info("MAX_DISTANCE   :", MAX_DISTANCE);
-info("MAX_DELIVERIES :", MAX_DELIVERIES);
-info("MAX_TRAINS     :", MAX_TRAINS);
-info("MAX_CAPACITY   :", MAX_CAPACITY);
-info("MIN_CAPACITY   :", MIN_CAPACITY);
+info(" MAX_STATIONS   :", MAX_STATIONS);
+info(" MIN_STATIONS   :", MIN_STATIONS);
+info(" MAX_DISTANCE   :", MAX_DISTANCE);
+info(" MAX_DELIVERIES :", MAX_DELIVERIES);
+info(" MIN_DELIVERIES :", MIN_DELIVERIES);
+info(" MAX_TRAINS     :", MAX_TRAINS);
+info(" MIN_TRAINS     :", MIN_TRAINS);
+info(" MAX_CAPACITY   :", MAX_CAPACITY);
+info(" MIN_CAPACITY   :", MIN_CAPACITY);
 
-info("--------------------");
+info("---------------------");
 
 // DEBUG: Message headers
 const ERR = C.black(" ") + C.bgRed.black.bold(" ERROR ");
@@ -48,14 +55,24 @@ if (MAX_STATIONS > ALPHABET.length) {
   process.exit(1);
 }
 
+if (MIN_STATIONS < 3) {
+  console.error(
+    ERR,
+    C.cyan("MIN_STATIONS"),
+    `(${C.yellow.bold(MIN_STATIONS)})`,
+    C.red("cant be lower than"),
+    `(${C.cyan.bold(3)})`
+  );
+  process.exit(1);
+}
+
 const rnd = (max = 10, min = 1, multiplier = 1) =>
   Math.round((Math.random() * (max - min) + min) / multiplier) * multiplier;
 
 function generate(multiplier) {
-  const stations = Array.from({ length: rnd(MAX_STATIONS, 3) }).reduce(
-    (acc, _, i) => [...acc, ALPHABET[i]],
-    []
-  );
+  const stations = Array.from({
+    length: rnd(MAX_STATIONS, MIN_STATIONS),
+  }).reduce((acc, _, i) => [...acc, ALPHABET[i]], []);
 
   const edges = stations.reduce((acc, cur, i, arr) => {
     if (i === arr.length - 1) return acc;
@@ -67,7 +84,7 @@ function generate(multiplier) {
   }, []);
 
   const { trains, highestCapacity } = Array.from({
-    length: rnd(MAX_TRAINS, 2),
+    length: rnd(MAX_TRAINS, MIN_TRAINS),
   }).reduce(
     (acc, _, i) => {
       const name = `Q${i + 1}`;
@@ -84,22 +101,21 @@ function generate(multiplier) {
     { trains: [], highestCapacity: 0 }
   );
 
-  const deliveries = Array.from({ length: rnd(MAX_DELIVERIES, 2) }).reduce(
-    (acc, _, i) => {
-      const name = `K${i + 1}`;
-      const weight = rnd(highestCapacity, multiplier, multiplier);
-      const src = stations[rnd(stations.length - 1, 0)];
-      const srcIndex = stations.findIndex((x) => x === src);
-      const remainingStations = [...stations];
-      remainingStations.splice(srcIndex, 1);
-      const dst = remainingStations[rnd(remainingStations.length - 1, 0)];
-      if (src === dst) return acc;
-      return [...acc, [name, weight, src, dst].join(",")];
-    },
-    []
-  );
+  const deliveries = Array.from({
+    length: rnd(MAX_DELIVERIES, MIN_DELIVERIES),
+  }).reduce((acc, _, i) => {
+    const name = `K${i + 1}`;
+    const weight = rnd(highestCapacity, multiplier, multiplier);
+    const src = stations[rnd(stations.length - 1, 0)];
+    const srcIndex = stations.findIndex((x) => x === src);
+    const remainingStations = [...stations];
+    remainingStations.splice(srcIndex, 1);
+    const dst = remainingStations[rnd(remainingStations.length - 1, 0)];
+    if (src === dst) return acc;
+    return [...acc, [name, weight, src, dst].join(",")];
+  }, []);
 
-  if (deliveries.length < 2) return generate(multiplier);
+  if (deliveries.length < MIN_DELIVERIES) return generate(multiplier);
 
   return {
     stations,
@@ -139,7 +155,7 @@ async function menu(multiplier) {
 
   if (again) return menu(multiplier);
 
-  info("\n", C.italic.green("ok, saving..."), "\n");
+  info("\n", C.italic.green("saving..."), "\n");
 
   info(C.italic.cyan(" default filename is"), C.red.bold("tmp"), "\n");
 
