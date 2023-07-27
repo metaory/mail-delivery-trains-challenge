@@ -1,5 +1,6 @@
 /* ******************************************** *
  * Randomely Generate and Store test input data *
+ * with interactive and non-interactive mode    *
  * ******************************************** */
 
 import readline from "node:readline";

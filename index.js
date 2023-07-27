@@ -47,7 +47,7 @@ const OK = C.black(" ") + C.bgGreen.black.bold(" OK ");
 // DEBUG: Catch file not found
 const catchFileNotFound = (path) =>
   stat(path).catch(() => {
-    console.error(ERR, C.yellow(path), C.red("FILE DOESN'T EXIST"));
+    console.error(ERR, C.yellow(path), C.red("FILE DOESN'T EXIST"), "\n");
     process.exit(1);
   });
 
@@ -419,7 +419,7 @@ function moveTrain(train, to, targetPkg) {
     // NOTE: DEBUG: emergency circuit breaker
     // XXX: This should never happen
     if (DEBUG_ESCAPE_HATCH_COUNTER > DEBUG_ESCAPE_HATCH_LIMIT) {
-      console.error(BUG, C.red("MOVE_TRAIN INFINITE LOOP BREAK"));
+      console.error(BUG, C.red("MOVE_TRAIN INFINITE LOOP BREAK"), "\n");
       process.exit(1);
     }
   }
@@ -436,7 +436,7 @@ while (deliveries.length) {
   DEBUG_ESCAPE_HATCH_COUNTER++;
   // XXX: This should never happen
   if (DEBUG_ESCAPE_HATCH_COUNTER > DEBUG_ESCAPE_HATCH_LIMIT) {
-    console.error(BUG, C.red("DELIVERY INFINITE LOOP BREAK"));
+    console.error(BUG, C.red("DELIVERY INFINITE LOOP BREAK"), "\n");
     process.exit(1);
   }
 
@@ -477,7 +477,7 @@ while (deliveries.length) {
 
     // DEBUG: This should never happen
     if (!train) {
-      console.error(BUG, C.red("NO TRAIN IS HOLDING"), C.cyan(pkg));
+      console.error(BUG, C.red("NO TRAIN IS HOLDING"), C.cyan(pkg), "\n");
       process.exit(1);
     }
 
