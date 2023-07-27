@@ -428,9 +428,6 @@ function moveTrain(train, to, targetPkg) {
 // NOTE: DEBUG: emergency circuit breaker
 let DEBUG_ESCAPE_HATCH_COUNTER = 0;
 
-loadPackage("Q1", "K1");
-loadPackage("Q1", "K2");
-loadPackage("Q1", "K3");
 // While there are still deliveries to be made
 while (deliveries.length) {
   log`still got ${deliveries.length} deliveries to do`;
@@ -445,11 +442,7 @@ while (deliveries.length) {
 
   // Pick the first package; we have to start somewhere!
   const [pick] = deliveries;
-  const {
-    name: pkg,
-    from: pickupStation,
-    to: dropoffStation,
-  } = getPkgDetail(pick);
+  const { name: pkg, from: pickupStation } = getPkgDetail(pick);
 
   // Check if the picked package status is at pickup
   if (deliveryStatus[pkg] === STATUS.AT_PICKUP) {
@@ -469,27 +462,11 @@ while (deliveries.length) {
 
   // Check if the picked package status is in-flight
   if (deliveryStatus[pkg] === STATUS.IN_FLIGHT) {
-    // The train that is holding the package
+    // Get the train that is holding the package
     const train = trainNames.reduce(
       (acc, cur) => (trainLoads[cur].includes(pkg) ? cur : acc),
       null
     );
-
-    // This train might be holding multiple packages
-    const buckets = trainLoads[train].reduce(
-      (acc, cur) => {
-        return acc;
-      },
-      [[], []]
-    );
-    console.log("buckets:", buckets);
-
-    // Find which direction has the most dropoffs
-
-    // Find the furthest package in that direction
-
-    process.exit();
-    log`move ${train} to dropoff ${pkg} at ${dropoffStation}`;
 
     // DEBUG: This should never happen
     if (!train) {
@@ -497,8 +474,52 @@ while (deliveries.length) {
       process.exit(1);
     }
 
-    // Move train to drop off package at dropoff station
-    moveTrain(train, dropoffStation);
+    // NOTE: This train might be holding multiple packages
+
+    // Train current position
+    const trainPos = positions[trainStations[train]];
+
+    // Find which direction this train has the most dropoffs
+    const [bucket] = trainLoads[train]
+      .reduce(
+        (acc, cur) => {
+          // Package destination position
+          const pkgPos = positions[getPkgDetail(cur).to];
+
+          // Distance between train current postion and package destination
+          const distance = getDiff(pkgPos, trainPos);
+
+          const distanceMap = { name: cur, distance };
+
+          // Destination is on the Left side of train current position
+          if (pkgPos < trainPos) acc[0].push(distanceMap);
+          // Destination is on the Right side of train current position
+          else acc[1].push(distanceMap);
+
+          return acc;
+        },
+        [[], []]
+      )
+      .sort((a, b) => {
+        if (a.length > b.length) return -1;
+        if (a.length < b.length) return 1;
+        return 0;
+      });
+
+    // Find the furthest package in that direction
+    const [{ name: furthestPkgName }] = bucket.sort((a, b) => {
+      if (a.distance > b.distance) return -1;
+      if (a.distance < b.distance) return 1;
+      return 0;
+    });
+
+    const { to: furthestPkgDestination } = getPkgDetail(furthestPkgName);
+
+    log`move ${train} to furthest package on the busiest direction:`;
+    log`furthest package destination is: ${furthestPkgDestination}`;
+
+    // Move train to furthest drop off package
+    moveTrain(train, furthestPkgDestination);
   }
 }
 
