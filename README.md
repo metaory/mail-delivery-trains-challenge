@@ -18,11 +18,47 @@
 npm install
 npm start
 # or
-npm start input-basic.json
-npm start input-edge.json
-npm start input-advance.json
-npm start test-file-name.json
+npm start assets/input-basic.json
+npm start assets/input-edge.json
+npm start assets/input-advance.json
+# or
+npm start [JSON_TEST_FILE_PATH]
 ```
+
+---
+
+## Generate random test input
+
+Randomly generate new test inputs:
+
+```bash
+# interactively generate and run solution
+npm run generate
+```
+
+<p align="center">
+  <img src="./assets/generate-test-input.gif" width="600" />
+</p>
+
+---
+
+```bash
+# forcefully generate and run solution
+npm run generate force [multiplier] [delay]
+
+# [multiplier]
+# for [distances, capacity, weight]
+# eg; multiplier of 5 gives: 5, 10, 15, 20, ...
+# default is 1
+
+# [delay]
+# delay in seconds
+# default is 3
+```
+
+<p align="center">
+  <img src="./assets/generate-test-input-force.gif" width="600" />
+</p>
 
 ---
 
@@ -141,6 +177,8 @@ _We like the best solution possible, but correctness is more important than opti
 
 ---
 
+##### Input
+
 ```javascript
 // input-edge.json
 {
@@ -149,7 +187,13 @@ _We like the best solution possible, but correctness is more important than opti
   deliveries: [ 'K1,1,A,D', 'K2,2,C,E', 'K3,4,B,D' ],
   trains: [ 'Q1,4,C', 'Q2,5,B' ]
 }
+```
 
+---
+
+##### Initial reduced structures
+
+```javascript
 // positions
 { A: 0, B: 1, C: 2, D: 3, E: 4 }
 
@@ -173,7 +217,13 @@ _We like the best solution possible, but correctness is more important than opti
 
 // train timeline
 { Q1: 0, Q2: 0 }
+```
 
+---
+
+##### Outcome
+
+```javascript
 // moves
 // *L is train load
 [
