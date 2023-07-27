@@ -27,6 +27,7 @@ const MAX_TRAINS = 8;
 const MIN_TRAINS = 4;
 const MAX_CAPACITY = 100;
 const MIN_CAPACITY = 20;
+const MAX_MULTIPLIER = 40;
 
 info(" MAX_STATIONS   :", MAX_STATIONS);
 info(" MIN_STATIONS   :", MIN_STATIONS);
@@ -37,6 +38,7 @@ info(" MAX_TRAINS     :", MAX_TRAINS);
 info(" MIN_TRAINS     :", MIN_TRAINS);
 info(" MAX_CAPACITY   :", MAX_CAPACITY);
 info(" MIN_CAPACITY   :", MIN_CAPACITY);
+info(" MAX_MULTIPLIER :", MAX_MULTIPLIER);
 
 info("---------------------");
 
@@ -192,8 +194,12 @@ function validateMultiplier(multiplier) {
   }
 
   // Arbitrary limit
-  if (multiplier >= 40) {
-    console.error(ERR, C.red("multiplier must be less than"), C.yellow(40));
+  if (multiplier >= MAX_MULTIPLIER) {
+    console.error(
+      ERR,
+      C.red("multiplier must be less than"),
+      C.yellow(MAX_MULTIPLIER)
+    );
     return false;
   }
 
