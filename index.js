@@ -259,17 +259,27 @@ const packagesTrainCandidates = () =>
     // Reduce trains to pick the best train for the current package
     const { candidate } = trainNames.reduce(
       (_acc, _cur) => {
+        // If current capacity is less than package weight
+        if (getTrainRemainingCapacity(_cur) < weight) return _acc;
+
         // Train current position
         const trainPos = positions[trainStations[_cur]];
 
         // Distance between package and train
         const diff = getDiff(pkgPos, trainPos);
 
-        // Enough capacity for package weight
-        const enoughCapacity = getTrainRemainingCapacity(_cur) >= weight;
+        // Does current train have less travel time than candidate
+        const traveledLess = timeline[_cur] < timeline[_acc.candidate];
 
-        // This distance is shorter than previous and have enough capacity
-        if (diff <= _acc.distance && enoughCapacity) {
+        // If current distance is same as candidate distance
+        // pick current if it have less travel time
+        if (diff === _acc.distance && traveledLess) {
+          _acc.candidate = _cur;
+          _acc.distance = diff;
+        }
+
+        // If current distance is shorter than candidate distance
+        if (diff < _acc.distance) {
           _acc.candidate = _cur;
           _acc.distance = diff;
         }
