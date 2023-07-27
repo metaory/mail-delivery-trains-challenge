@@ -30,18 +30,14 @@ const MAX_CAPACITY = 100;
 const MIN_CAPACITY = 20;
 const MAX_MULTIPLIER = 40;
 
-info(" MAX_STATIONS   :", MAX_STATIONS);
-info(" MIN_STATIONS   :", MIN_STATIONS);
-info(" MAX_DISTANCE   :", MAX_DISTANCE);
-info(" MAX_DELIVERIES :", MAX_DELIVERIES);
-info(" MIN_DELIVERIES :", MIN_DELIVERIES);
-info(" MAX_TRAINS     :", MAX_TRAINS);
-info(" MIN_TRAINS     :", MIN_TRAINS);
-info(" MAX_CAPACITY   :", MAX_CAPACITY);
-info(" MIN_CAPACITY   :", MIN_CAPACITY);
-info(" MAX_MULTIPLIER :", MAX_MULTIPLIER);
+info(" MIN-MAX STATIONS   :", MIN_STATIONS, "-", MAX_STATIONS);
+info(" MAX DISTANCE       :", MAX_DISTANCE);
+info(" MIN-MAX DELIVERIES :", MIN_DELIVERIES, "-", MAX_DELIVERIES);
+info(" MIN-MAX TRAINS     :", MIN_TRAINS, "-", MAX_TRAINS);
+info(" MIN-MAX CAPACITY   :", MIN_CAPACITY, "-", MAX_CAPACITY);
+info(" MAX MULTIPLIER     :", MAX_MULTIPLIER);
 
-info("---------------------");
+info("------------------------------");
 
 // DEBUG: Message headers
 const ERR = C.black(" ") + C.bgRed.black.bold(" ERROR ");
@@ -166,13 +162,8 @@ async function menu(multiplier) {
 
   write(`./assets/${filename}`, output);
 
-  info(
-    "\n",
-    C.cyan("you can run solution with"),
-    "\n",
-    C.bgGreen.black.bold(` npm start assets/${filename} `),
-    "\n"
-  );
+  info("\n", C.cyan("run the solution with"));
+  info("", C.bgGreen.black.bold(` npm start assets/${filename} `), "\n");
 
   const runIt = await promptConfirm("do you want to run it now?", false);
 
