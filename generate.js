@@ -212,7 +212,7 @@ async function getMultiplier() {
   return multiplier;
 }
 
-// Argument mode
+// non-interactive mode
 if (process.argv[2] === "force") {
   const multiplier = Number(process.argv[3] ?? 1);
 
@@ -233,5 +233,5 @@ if (process.argv[2] === "force") {
   process.exit();
 }
 
-// Interactive mode
+// interactive mode
 menu(await getMultiplier());
