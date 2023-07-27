@@ -131,7 +131,7 @@ function generate(multiplier) {
 const promptConfirm = (question, def) =>
   new Promise((resolve) =>
     prompt.question(
-      `${C.yellow.bold(question)} ${C.red.bold(def ? "[Y/n]" : "[y/N]")} `,
+      C.yellow.bold(question) + C.red.bold(def ? " [Y/n] " : " [y/N] "),
       (raw) => resolve((raw.trim() || (def ? "y" : "n")).toLowerCase() === "y")
     )
   );

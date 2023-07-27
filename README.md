@@ -22,7 +22,7 @@ npm start assets/input-basic.json
 npm start assets/input-edge.json
 npm start assets/input-advance.json
 # or
-npm start [JSON_TEST_FILE_PATH]
+npm start [path]
 ```
 
 ---
