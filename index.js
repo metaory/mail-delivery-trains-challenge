@@ -428,6 +428,9 @@ function moveTrain(train, to, targetPkg) {
 // NOTE: DEBUG: emergency circuit breaker
 let DEBUG_ESCAPE_HATCH_COUNTER = 0;
 
+loadPackage("Q1", "K1");
+loadPackage("Q1", "K2");
+loadPackage("Q1", "K3");
 // While there are still deliveries to be made
 while (deliveries.length) {
   log`still got ${deliveries.length} deliveries to do`;
@@ -471,6 +474,21 @@ while (deliveries.length) {
       (acc, cur) => (trainLoads[cur].includes(pkg) ? cur : acc),
       null
     );
+
+    // This train might be holding multiple packages
+    const buckets = trainLoads[train].reduce(
+      (acc, cur) => {
+        return acc;
+      },
+      [[], []]
+    );
+    console.log("buckets:", buckets);
+
+    // Find which direction has the most dropoffs
+
+    // Find the furthest package in that direction
+
+    process.exit();
     log`move ${train} to dropoff ${pkg} at ${dropoffStation}`;
 
     // DEBUG: This should never happen
