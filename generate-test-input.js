@@ -22,14 +22,16 @@ const MAX_DISTANCE = 100;
 const MAX_DELIVERIES = 6;
 const MAX_TRAINS = 4;
 const MAX_CAPACITY = 100;
+const MIN_CAPACITY = 40;
 
 info("MAX_STATIONS   :", MAX_STATIONS);
 info("MAX_DISTANCE   :", MAX_DISTANCE);
 info("MAX_DELIVERIES :", MAX_DELIVERIES);
 info("MAX_TRAINS     :", MAX_TRAINS);
 info("MAX_CAPACITY   :", MAX_CAPACITY);
+info("MIN_CAPACITY   :", MIN_CAPACITY);
 
-info("-------------------------------");
+info("--------------------");
 
 // DEBUG: Message headers
 const ERR = C.black(" ") + C.bgRed.black.bold(" ERROR ");
@@ -69,7 +71,8 @@ function generate(multiplier) {
   }).reduce(
     (acc, _, i) => {
       const name = `Q${i + 1}`;
-      const capacity = rnd(MAX_CAPACITY, multiplier, multiplier);
+      const minCapacity = Math.floor(MIN_CAPACITY / multiplier) * multiplier;
+      const capacity = rnd(MAX_CAPACITY, minCapacity, multiplier);
       const station = stations[rnd(stations.length - 1, 0)];
 
       // To make sure there wont be any package with weight higher than our highest capacity train
