@@ -371,9 +371,6 @@ function moveTrain(train, to, targetPkg) {
   // NOTE: DEBUG: emergency circuit breaker
   let DEBUG_ESCAPE_HATCH_COUNTER = 0;
 
-  // Attempt to pickup more package before moving
-  pickupPackages(train, direction, to);
-
   // Move until we've reached destinations
   while (trainStations[train] !== to) {
     // NOTE: DEBUG: Increment circuit breaker counter
@@ -517,7 +514,6 @@ const solutionTime = trainNames.reduce(
 
 info(C.italic.grey("(Time elapsed + the final leg of journey duration)"));
 
-log`(Time elapsed + the final leg of journey duration)`;
 log`Solution time is: ${solutionTime}`;
 // for input-basic.json:   70   // 70  on old implementation
 // for input-edge.json:    110  // 235 on old implementation
