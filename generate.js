@@ -30,14 +30,14 @@ const MAX_CAPACITY = 100;
 const MIN_CAPACITY = 20;
 const MAX_MULTIPLIER = 40;
 
-info(" MIN-MAX STATIONS   :", MIN_STATIONS, "-", MAX_STATIONS);
-info(" MIN-MAX DISTANCE   :", 1, "-", MAX_DISTANCE);
-info(" MIN-MAX DELIVERIES :", MIN_DELIVERIES, "-", MAX_DELIVERIES);
-info(" MIN-MAX TRAINS     :", MIN_TRAINS, "-", MAX_TRAINS);
-info(" MIN-MAX CAPACITY   :", MIN_CAPACITY, "-", MAX_CAPACITY);
-info(" MIN-MAX MULTIPLIER :", 1, "-", MAX_MULTIPLIER);
+info(C.grey(" MIN-MAX STATIONS   :"), MIN_STATIONS, "-", MAX_STATIONS);
+info(C.grey(" MIN-MAX DISTANCE   :"), 1, "-", MAX_DISTANCE);
+info(C.grey(" MIN-MAX DELIVERIES :"), MIN_DELIVERIES, "-", MAX_DELIVERIES);
+info(C.grey(" MIN-MAX TRAINS     :"), MIN_TRAINS, "-", MAX_TRAINS);
+info(C.grey(" MIN-MAX CAPACITY   :"), MIN_CAPACITY, "-", MAX_CAPACITY);
+info(C.grey(" MIN-MAX MULTIPLIER :"), 1, "-", MAX_MULTIPLIER);
 
-info("------------------------------");
+info(C.grey("------------------------------"));
 
 // DEBUG: Message headers
 const ERR = C.black(" ") + C.bgRed.black.bold(" ERROR ");
