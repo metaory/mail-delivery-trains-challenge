@@ -203,7 +203,7 @@ async function getMultiplier() {
   info(" eg; multiplier of", C.cyan(5), "gives", C.green("5, 10, 15, 20, ..."));
   info(C.italic.cyan(" default multiplier is"), C.red.bold(1), "\n");
 
-  const multiplier = Number(await promptValue("enter multiplier: ", "1"));
+  const multiplier = Math.round(await promptValue("enter multiplier: ", "1"));
 
   if (validateMultiplier(multiplier) === false) return getMultiplier();
 
@@ -214,7 +214,7 @@ async function getMultiplier() {
 
 // non-interactive mode
 if (process.argv[2] === "force") {
-  const multiplier = Number(process.argv[3] ?? 1);
+  const multiplier = Math.round(process.argv[3] ?? 1);
 
   if (validateMultiplier(multiplier) === false) process.exit(1);
 
