@@ -25,7 +25,7 @@ const MAX_DISTANCE = 100;
 const MAX_DELIVERIES = 10;
 const MIN_DELIVERIES = 2;
 const MAX_TRAINS = 8;
-const MIN_TRAINS = 4;
+const MIN_TRAINS = 2;
 const MAX_CAPACITY = 100;
 const MIN_CAPACITY = 20;
 const MAX_MULTIPLIER = 40;
@@ -110,11 +110,8 @@ function generate(multiplier) {
     const remainingStations = [...stations];
     remainingStations.splice(srcIndex, 1);
     const dst = remainingStations[rnd(remainingStations.length - 1, 0)];
-    if (src === dst) return acc;
     return [...acc, [name, weight, src, dst].join(",")];
   }, []);
-
-  if (deliveries.length < MIN_DELIVERIES) return generate(multiplier);
 
   return {
     stations,
