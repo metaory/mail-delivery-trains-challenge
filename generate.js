@@ -159,7 +159,7 @@ async function menu(multiplier) {
 
   write(`./assets/${filename}`, output);
 
-  info("\n", C.cyan("run the solution with"));
+  info("\n ", C.cyan("run the solution with"));
   info("", C.bgGreen.black.bold(` npm start assets/${filename} `), "\n");
 
   const runIt = await promptConfirm("do you want to run it now?", false);
