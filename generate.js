@@ -11,11 +11,6 @@ const { clear, info } = console;
 
 clear();
 
-const prompt = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
-
 const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 // Configurations
@@ -28,7 +23,7 @@ const MAX_TRAINS = 8;
 const MIN_TRAINS = 2;
 const MAX_CAPACITY = 100;
 const MIN_CAPACITY = 20;
-const MAX_MULTIPLIER = 40;
+const MAX_MULTIPLIER = 40; // Arbitrary limit
 
 info(C.grey(" MIN-MAX STATIONS   :"), MIN_STATIONS, "-", MAX_STATIONS);
 info(C.grey(" MIN-MAX DISTANCE   :"), 1, "-", MAX_DISTANCE);
@@ -43,6 +38,13 @@ info(C.grey("------------------------------"));
 const ERR = C.black(" ") + C.bgRed.black.bold(" ERROR ");
 const DONE = C.black(" ") + C.bgGreen.black.bold(" DONE ");
 
+// Create readline interface
+const prompt = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
+
+// Validations
 if (MAX_STATIONS > ALPHABET.length) {
   console.error(
     ERR,
@@ -65,9 +67,11 @@ if (MIN_STATIONS < 3) {
   process.exit(1);
 }
 
+// Generate random number between range on factor of multiplier
 const rnd = (max = 10, min = 1, multiplier = 1) =>
   Math.round((Math.random() * (max - min) + min) / multiplier) * multiplier;
 
+// Generate mock data
 function generate(multiplier) {
   const stations = Array.from({
     length: rnd(MAX_STATIONS, MIN_STATIONS),
@@ -121,6 +125,7 @@ function generate(multiplier) {
   };
 }
 
+// Prompt boolean
 const promptConfirm = (question, def) =>
   new Promise((resolve) =>
     prompt.question(
@@ -129,6 +134,7 @@ const promptConfirm = (question, def) =>
     )
   );
 
+// Prompt value
 const promptValue = (question, def, suffix = "") =>
   new Promise((resolve) =>
     prompt.question(C.yellow.bold(question), (raw) =>
@@ -136,12 +142,18 @@ const promptValue = (question, def, suffix = "") =>
     )
   );
 
+// Write to disk
 const write = (path, data) => {
   writeFileSync(path, JSON.stringify(data, null, 2));
+
   info("\n", C.blue("stored the generated input data in"), C.green.bold(path));
+  info("\n ", C.cyan("run the solution with"));
+  info("", C.bgGreen.black.bold(` npm start ${path} `), "\n");
+
   process.argv[2] = path;
 };
 
+// Interactive menu
 async function menu(multiplier) {
   const output = generate(multiplier);
 
@@ -157,10 +169,7 @@ async function menu(multiplier) {
 
   const filename = await promptValue("enter filename: ", "tmp", ".json");
 
-  write(`./assets/${filename}`, output);
-
-  info("\n ", C.cyan("run the solution with"));
-  info("", C.bgGreen.black.bold(` npm start assets/${filename} `), "\n");
+  write(`assets/${filename}`, output);
 
   const runIt = await promptConfirm("do you want to run it now?", false);
 
@@ -171,6 +180,7 @@ async function menu(multiplier) {
   process.exit();
 }
 
+// Multiplier validation
 function validateMultiplier(multiplier) {
   if (isNaN(multiplier)) {
     console.error(ERR, C.red("multiplier must be a"), C.yellow("Number"));
@@ -182,7 +192,6 @@ function validateMultiplier(multiplier) {
     return false;
   }
 
-  // Arbitrary limit
   if (multiplier >= MAX_MULTIPLIER) {
     console.error(
       ERR,
@@ -192,9 +201,12 @@ function validateMultiplier(multiplier) {
     return false;
   }
 
+  info(C.green("multiplier is set to"), C.cyan.bold(multiplier), "\n");
+
   return true;
 }
 
+// Prompt multiplier
 async function getMultiplier() {
   info(C.italic("\n multiplier for"), C.blue("[distance, capacity, weight]"));
   info(" eg; multiplier of", C.cyan(5), "gives", C.green("5, 10, 15, 20, ..."));
@@ -203,8 +215,6 @@ async function getMultiplier() {
   const multiplier = Math.round(await promptValue("enter multiplier: ", "1"));
 
   if (validateMultiplier(multiplier) === false) return getMultiplier();
-
-  info(C.green("multiplier is set to"), C.cyan.bold(multiplier), "\n");
 
   return multiplier;
 }
@@ -215,11 +225,7 @@ if (process.argv[2] === "force") {
 
   if (validateMultiplier(multiplier) === false) process.exit(1);
 
-  info(C.green("multiplier is set to"), C.cyan.bold(multiplier));
-
-  write("./assets/tmp.json", generate(multiplier));
-
-  info("\n", C.cyan("running solution with test data..."), "\n");
+  write("assets/tmp.json", generate(multiplier));
 
   process.argv[3] = process.argv[4] ?? 3; // Sleep delay
 
