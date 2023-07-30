@@ -99,8 +99,7 @@ function generate(multiplier) {
   }).reduce(
     (acc, _, i) => {
       const name = `Q${i + 1}`;
-      const minCapacity =
-        Math.floor(CFG.MIN_CAPACITY / multiplier) * multiplier;
+      const minCapacity = Math.ceil(CFG.MIN_CAPACITY / multiplier) * multiplier;
       const capacity = rnd(CFG.MAX_CAPACITY, minCapacity, multiplier);
       const station = stations[rnd(stations.length - 1, 0)];
 
