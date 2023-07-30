@@ -1,5 +1,5 @@
 /* ******************************************** *
- * Randomely Generate and Store test input data *
+ * Randomely Generate and Store mock input data *
  * with interactive and non-interactive mode    *
  * ******************************************** */
 
@@ -14,25 +14,33 @@ clear();
 const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 // Configurations
-const MAX_STATIONS = 10;
-const MIN_STATIONS = 3;
-const MAX_DISTANCE = 100;
-const MAX_DELIVERIES = 10;
-const MIN_DELIVERIES = 2;
-const MAX_TRAINS = 8;
-const MIN_TRAINS = 2;
-const MAX_CAPACITY = 100;
-const MIN_CAPACITY = 20;
-const MAX_MULTIPLIER = 40; // Arbitrary limit
+const CFG = {
+  MIN_STATIONS: 3,
+  MAX_STATIONS: 10,
+  MAX_DISTANCE: 100,
+  MIN_DELIVERIES: 2,
+  MAX_DELIVERIES: 10,
+  MIN_TRAINS: 2,
+  MAX_TRAINS: 8,
+  MIN_CAPACITY: 20,
+  MAX_CAPACITY: 100,
+  MAX_MULTIPLIER: 40, // Arbitrary limit
+};
 
-info(C.grey(" MIN-MAX STATIONS   :"), MIN_STATIONS, "-", MAX_STATIONS);
-info(C.grey(" MIN-MAX DISTANCE   :"), 1, "-", MAX_DISTANCE);
-info(C.grey(" MIN-MAX DELIVERIES :"), MIN_DELIVERIES, "-", MAX_DELIVERIES);
-info(C.grey(" MIN-MAX TRAINS     :"), MIN_TRAINS, "-", MAX_TRAINS);
-info(C.grey(" MIN-MAX CAPACITY   :"), MIN_CAPACITY, "-", MAX_CAPACITY);
-info(C.grey(" MIN-MAX MULTIPLIER :"), 1, "-", MAX_MULTIPLIER);
+console.table(
+  Object.keys(CFG).reduce((acc, cur) => {
+    const name = cur.substring(4, cur.length);
+    return {
+      ...acc,
+      [C.cyan(name)]: {
+        [C.green("MIN")]: CFG[`MIN_${name}`] ?? 1,
+        [C.red("MAX")]: CFG[`MAX_${name}`] ?? Infinity,
+      },
+    };
+  }, {})
+);
 
-info(C.grey("------------------------------"));
+info(C.grey("--------------------------"));
 
 // DEBUG: Message headers
 const ERR = C.black(" ") + C.bgRed.black.bold(" ERROR ");
@@ -45,22 +53,22 @@ const prompt = readline.createInterface({
 });
 
 // Validations
-if (MAX_STATIONS > ALPHABET.length) {
+if (CFG.MAX_STATIONS > ALPHABET.length) {
   console.error(
     ERR,
     C.cyan("MAX_STATIONS"),
-    `(${C.yellow.bold(MAX_STATIONS)})`,
+    `(${C.yellow.bold(CFG.MAX_STATIONS)})`,
     C.red("cant be higher than ALPHABET length"),
     `(${C.cyan.bold(ALPHABET.length)})`
   );
   process.exit(1);
 }
 
-if (MIN_STATIONS < 3) {
+if (CFG.MIN_STATIONS < 3) {
   console.error(
     ERR,
     C.cyan("MIN_STATIONS"),
-    `(${C.yellow.bold(MIN_STATIONS)})`,
+    `(${C.yellow.bold(CFG.MIN_STATIONS)})`,
     C.red("cant be lower than"),
     `(${C.cyan.bold(3)})`
   );
@@ -74,7 +82,7 @@ const rnd = (max = 10, min = 1, multiplier = 1) =>
 // Generate mock data
 function generate(multiplier) {
   const stations = Array.from({
-    length: rnd(MAX_STATIONS, MIN_STATIONS),
+    length: rnd(CFG.MAX_STATIONS, CFG.MIN_STATIONS),
   }).reduce((acc, _, i) => [...acc, ALPHABET[i]], []);
 
   const edges = stations.reduce((acc, cur, i, arr) => {
@@ -82,17 +90,18 @@ function generate(multiplier) {
     const name = `E${i + 1}`;
     const src = cur;
     const dst = arr[i + 1];
-    const dur = rnd(MAX_DISTANCE, multiplier, multiplier);
+    const dur = rnd(CFG.MAX_DISTANCE, multiplier, multiplier);
     return [...acc, [name, src, dst, dur].join(",")];
   }, []);
 
   const { trains, highestCapacity } = Array.from({
-    length: rnd(MAX_TRAINS, MIN_TRAINS),
+    length: rnd(CFG.MAX_TRAINS, CFG.MIN_TRAINS),
   }).reduce(
     (acc, _, i) => {
       const name = `Q${i + 1}`;
-      const minCapacity = Math.floor(MIN_CAPACITY / multiplier) * multiplier;
-      const capacity = rnd(MAX_CAPACITY, minCapacity, multiplier);
+      const minCapacity =
+        Math.floor(CFG.MIN_CAPACITY / multiplier) * multiplier;
+      const capacity = rnd(CFG.MAX_CAPACITY, minCapacity, multiplier);
       const station = stations[rnd(stations.length - 1, 0)];
 
       // To make sure there wont be any package with weight higher than our highest capacity train
@@ -105,7 +114,7 @@ function generate(multiplier) {
   );
 
   const deliveries = Array.from({
-    length: rnd(MAX_DELIVERIES, MIN_DELIVERIES),
+    length: rnd(CFG.MAX_DELIVERIES, CFG.MIN_DELIVERIES),
   }).reduce((acc, _, i) => {
     const name = `K${i + 1}`;
     const weight = rnd(highestCapacity, multiplier, multiplier);
@@ -192,11 +201,11 @@ function validateMultiplier(multiplier) {
     return false;
   }
 
-  if (multiplier >= MAX_MULTIPLIER) {
+  if (multiplier >= CFG.MAX_MULTIPLIER) {
     console.error(
       ERR,
       C.red("multiplier must be less than"),
-      C.yellow(MAX_MULTIPLIER)
+      C.yellow(CFG.MAX_MULTIPLIER)
     );
     return false;
   }

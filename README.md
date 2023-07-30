@@ -37,7 +37,7 @@ npm run generate
 ```
 
 <p align="center">
-  <img src="./assets/generate-test-input.gif" width="600" />
+  <img src="./assets/generate-mock.gif" width="600" />
 </p>
 
 ---
@@ -57,7 +57,7 @@ npm run generate force [multiplier] [delay]
 ```
 
 <p align="center">
-  <img src="./assets/generate-test-input-force.gif" width="600" />
+  <img src="./assets/generate-mock-force.gif" width="600" />
 </p>
 
 ---
