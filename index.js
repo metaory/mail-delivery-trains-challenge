@@ -481,6 +481,8 @@ while (deliveries.length) {
       process.exit(1);
     }
 
+    log`move ${train} to dropoff ${pkg} at ${dropoffStation}`;
+
     // Move train to drop off package at dropoff station
     moveTrain(train, dropoffStation);
   }
