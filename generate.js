@@ -102,10 +102,8 @@ function generate(multiplier) {
       const minCapacity = Math.ceil(CFG.MIN_CAPACITY / multiplier) * multiplier;
       const capacity = rnd(CFG.MAX_CAPACITY, minCapacity, multiplier);
       const station = stations[rnd(stations.length - 1, 0)];
-
       // To make sure there wont be any package with weight higher than our highest capacity train
       if (capacity > acc.highestCapacity) acc.highestCapacity = capacity;
-
       acc.trains.push([name, capacity, station].join(","));
       return acc;
     },
@@ -155,7 +153,7 @@ const write = (path, data) => {
   writeFileSync(path, JSON.stringify(data, null, 2));
 
   info("\n", C.blue("stored the generated input data in"), C.green.bold(path));
-  info("\n ", C.cyan("run the solution with"));
+  info("\n", C.cyan(" run the solution with"));
   info("", C.bgGreen.black.bold(` npm start ${path} `), "\n");
 
   process.argv[2] = path;
