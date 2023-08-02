@@ -139,12 +139,7 @@ console.log(distances);
 // { 'A-B': 30, 'B-A': 30, 'B-C': 10, 'C-B': 10, 'C-D': 40, 'D-C': 40, 'D-E': 15, 'E-D': 15 }
 
 // Reduce input trains to produce an array of train names
-const trainNames = Object.freeze(
-  trains.reduce((acc, cur) => {
-    const [name] = cur.split(",");
-    return [...acc, name];
-  }, [])
-);
+const trainNames = Object.freeze(trains.map((x) => x.split(",")[0]));
 
 console.log(trainNames);
 // ['Q1', 'Q2']
@@ -478,12 +473,7 @@ while (deliveries.length) {
   // Check if the picked package status is in-flight
   if (deliveryStatus[pkg] === STATUS.IN_FLIGHT) {
     // The train that is holding the package
-    const train = trainNames.reduce(
-      (acc, cur) => (trainLoads[cur].includes(pkg) ? cur : acc),
-      null
-    );
-
-    log`move ${train} to dropoff ${pkg} at ${dropoffStation}`;
+    const train = trainNames.find((x) => trainLoads[x].includes(pkg));
 
     // DEBUG: This should never happen
     if (!train) {
