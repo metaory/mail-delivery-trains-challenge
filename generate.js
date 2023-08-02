@@ -83,7 +83,7 @@ const rnd = (max = 10, min = 1, multiplier = 1) =>
 function generate(multiplier) {
   const stations = Array.from({
     length: rnd(CFG.MAX_STATIONS, CFG.MIN_STATIONS),
-  }).reduce((acc, _, i) => [...acc, ALPHABET[i]], []);
+  }).map((_, i) => ALPHABET[i]);
 
   const edges = stations.reduce((acc, cur, i, arr) => {
     if (i === arr.length - 1) return acc;
@@ -114,7 +114,7 @@ function generate(multiplier) {
 
   const deliveries = Array.from({
     length: rnd(CFG.MAX_DELIVERIES, CFG.MIN_DELIVERIES),
-  }).reduce((acc, _, i) => {
+  }).map((_, i) => {
     const name = `K${i + 1}`;
     const weight = rnd(highestCapacity, multiplier, multiplier);
     const src = stations[rnd(stations.length - 1, 0)];
@@ -122,8 +122,8 @@ function generate(multiplier) {
     const remainingStations = [...stations];
     remainingStations.splice(srcIndex, 1);
     const dst = remainingStations[rnd(remainingStations.length - 1, 0)];
-    return [...acc, [name, weight, src, dst].join(",")];
-  }, []);
+    return [name, weight, src, dst].join(",");
+  });
 
   return {
     stations,
