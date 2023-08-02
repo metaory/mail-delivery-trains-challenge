@@ -294,45 +294,40 @@ console.log(packagesTrainCandidates());
 const pickupPackages = (train, targetPkgName) => {
   // The package train is on the way to pickup
   const { weight: targetPkgWeight } = getPkgDetail(targetPkgName);
-  // Train remaining capacity
-  const remainingCapacity = getTrainRemainingCapacity(train);
 
-  // PERF: Consider current train direction
-  // const trainCurrentPos = positions[trainStations[train]];
-  // const trainDestinationPos = positions[destination];
+  // Filter possible package candidates for train
+  const { candidates } = deliveries.reduce(
+    (acc, cur) => {
+      const { name, weight, from } = getPkgDetail(cur);
 
-  // Select a package candidate for train
-  const packageCandidate = deliveries.find((x) => {
-    const { name, weight, from } = getPkgDetail(x);
+      // Does it have enough remaining capacity?
+      const enoughCapacity = acc.space >= weight;
+      // Is it still at pickup?
+      const atPickup = deliveryStatus[name] === STATUS.AT_PICKUP;
+      // Is package pickup location where train is?
+      const isHere = from === trainStations[train];
 
-    // PERF: Consider current train direction
-    // const packageDestinationPos = positions[to];
+      if (enoughCapacity && atPickup && isHere) {
+        acc.candidates.push(name);
+        acc.space -= weight;
+        log`remaining weight: ${acc.space}`;
+      }
 
-    // If train is on the way to pickup a package: (targetPkg)
-    // account for that package weight as well
+      return acc;
+    },
+    {
+      candidates: [],
+      space: getTrainRemainingCapacity(train) - targetPkgWeight,
+    }
+  );
 
-    // Does it have enough remaining capacity?
-    const enoughCapacity = remainingCapacity - targetPkgWeight >= weight;
-    // Is it still at pickup?
-    const atPickup = deliveryStatus[name] === STATUS.AT_PICKUP;
-    // Is package pickup location where train is?
-    const isHere = from === trainStations[train];
-
-    // PERF: Consider current train direction
-    // Is package destination on the same direction train is going?
-    // const sameDirection = dir === DIRECTION.RIGHT ? packageDestinationPos > trainCurrentPos : packageDestinationPos < trainCurrentPos ;
-    // Is package drop off before current destination
-    // const dropoffIsBeforeCurrentDestination = dir === DIRECTION.RIGHT ? packageDestinationPos < trainDestinationPos : packageDestinationPos  > trainDestinationPos;
-
-    return enoughCapacity && atPickup && isHere;
-  });
+  log`found ${candidates.length} candidates for ${train}`;
 
   // We have a package candidate
-  if (packageCandidate) {
-    const [pkg] = packageCandidate.split(",");
-    log`found package candidate: ${pkg} for ${train}`;
-    loadPackage(train, pkg);
-  }
+  candidates.forEach((x) => {
+    log`loading up candidate: ${x} onto ${train}`;
+    loadPackage(train, x);
+  });
 };
 
 // Return the immediate next possible move and direction
