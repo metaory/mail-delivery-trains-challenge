@@ -310,7 +310,6 @@ const pickupPackages = (train, targetPkgName) => {
       if (enoughCapacity && atPickup && isHere) {
         acc.candidates.push(name);
         acc.space -= weight;
-        log`remaining weight: ${acc.space}`;
       }
 
       return acc;
@@ -323,7 +322,7 @@ const pickupPackages = (train, targetPkgName) => {
 
   log`found ${candidates.length} candidates for ${train}`;
 
-  // We have a package candidate
+  // We have package candidates
   candidates.forEach((x) => {
     log`loading up candidate: ${x} onto ${train}`;
     loadPackage(train, x);
